@@ -22,6 +22,9 @@ class AuthController extends Controller
             $imageFile = request()->file('image')->store('app', 'public');
         }
 
+        if (User::where('phoneNumber', request('phoneNumber'))->first())
+            return response()->json(['message' => 'This phoneNumber already exist'], 400);
+
         $user = User::create([
             'name' => request('name'),
             'phoneNumber' => request('phoneNumber'),
@@ -39,9 +42,9 @@ class AuthController extends Controller
         $user = User::where('phoneNumber', request('phoneNumber'))->first();
 
         if (!$user)
-            return response()->json(['message' => 'No such phoneNumber'], 300);
+            return response()->json(['message' => 'No such phoneNumber'], 400);
         if (!Hash::check(request('password'), $user->password))
-            return response()->json(['message' => 'password doesn\'t match'], 300);
+            return response()->json(['message' => 'password doesn\'t match'], 400);
 
         //TODO: make rememberMe optional
         Auth::login($user, TRUE);
