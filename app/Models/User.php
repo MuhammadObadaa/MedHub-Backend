@@ -48,22 +48,26 @@ class User extends Authenticatable
     ];
 
     //returns all the carts that the user sent
-    public function carts(){
-        return $this->hasMany(Cart::class,'user_id','id')->latest();
+    public function carts()
+    {
+        return $this->hasMany(Cart::class, 'user_id', 'id')->latest();
     }
     //returns the medicines that the user favored
-    public function favors(){
-        return $this->belongsToMany(Medicine::class,'medicine_user','user_id','medicine_id')->withTimestamps();
+    public function favors()
+    {
+        return $this->belongsToMany(Medicine::class, 'medicine_user', 'user_id', 'medicine_id')->withTimestamps();
     }
     //returns if the user has favored a medicine or not
-    public function hasFavored(Medicine $medicine){
-        return $this->favors()->where('medicine_id',$medicine->id)->exists();
+    public function hasFavored(Medicine $medicine)
+    {
+        return $this->favors()->where('medicine_id', $medicine->id)->exists();
     }
-    
-    public function getImageURL(){
-        if($this->has('image')){
-            //first arg is the path of the file relative to the public direcotry
-            return url('storage',$this->image);
+
+    public function getImageURL()
+    {
+        if ($this->has('image')) {
+            //first arg is the path of the file relative to the public directory
+            return url('storage', $this->image);
         }
         return '';
     }

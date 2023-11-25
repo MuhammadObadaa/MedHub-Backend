@@ -27,8 +27,8 @@ class Medicine extends Model
         'category'
     ];
 
-    //this tells the model, whenever u query the info of the mdicines, get the count of users
-    //who added them to the favourites list
+    //this tells the model, whenever u query the info of the medicines, get the count of users
+    //who added them to the favorites list
     protected $withCount = [
         'favored'
     ];
@@ -37,7 +37,7 @@ class Medicine extends Model
     public function category(){
         return $this->belongsTo(Category::class,'category_id','id');
     }
-    //returns the user that has added the medicine to the favourites
+    //returns the user that has added the medicine to the favorites
     public function favored(){
         return $this->belongsToMany(User::class,'medicine_user','medicine_id','user_id')->withTimestamps();
     }
@@ -48,7 +48,7 @@ class Medicine extends Model
 
     public function getImageURL(){
         if($this->has('image')){
-            //first arg is the path of the file relative to the public direcotry
+            //first arg is the path of the file relative to the public directory
             return url('storage',$this->image);
         }
         return '';
