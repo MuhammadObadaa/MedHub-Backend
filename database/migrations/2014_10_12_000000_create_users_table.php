@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('pharmacyName');
-            $table->string('pharmacyLocation');
+            $table->string('pharmacyLocation')->nullable();
             $table->string('phoneNumber')->unique();
             $table->string('password');
             $table->boolean('is_admin')->default(False);

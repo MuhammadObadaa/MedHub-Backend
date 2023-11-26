@@ -19,6 +19,11 @@ Route::get('/', function () {
 });
 
 //---- Authentication Routes
-Route::post('/register', [AuthController::class, 'create'])->name('signup');
+Route::post('/register', [AuthController::class, 'create'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+//---- Tokens_need routes
+Route::group(['middleware' => 'user'], function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/changePassword', [AuthController::class, 'changePassword'])->name('changePassword'); //->middleware('user');
+});
