@@ -15,7 +15,7 @@ class Cart extends Model
         'status'
     ];
 
-    //this tells the model, whenever u fetch the info of a cart, get all the midicines
+    //this tells the model, whenever u fetch the info of a cart, get all the medicines
     //that was in it.
     protected $with = [
         'medicines'
