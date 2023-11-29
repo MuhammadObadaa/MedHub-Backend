@@ -10,9 +10,12 @@ class Medicine extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'ar-name',
         'scientificName',
+        'ar-scientificName',
         'brand',
         'description',
+        'ar-description',
         'quantity',
         'expirationDate',
         'price',

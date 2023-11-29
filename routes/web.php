@@ -27,3 +27,6 @@ Route::group(['middleware' => 'user'], function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/changePassword', [AuthController::class, 'changePassword'])->name('changePassword'); //->middleware('user');
 });
+
+
+
