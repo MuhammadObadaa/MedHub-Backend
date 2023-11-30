@@ -14,8 +14,7 @@ class MedicineController extends Controller
     //the validation takes process on the front-end,
     //front-end developer must send the category_id for every medicine created
     public function store(){
-        //TODO make some columns unique in the database, and validate them
-
+        //TODO: make some columns unique in the database, and validate them
         $imageFile = '';
         if(request()->has('image')){
             $validatedImage = Validator::make(request()->get('image'),[
@@ -51,4 +50,12 @@ class MedicineController extends Controller
             'message'=>'medicine added successfully'
         ]);
     }
+
+
+    public function list(){
+        
+    }
+
+
+
 }
