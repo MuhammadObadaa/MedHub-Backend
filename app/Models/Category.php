@@ -11,7 +11,7 @@ class Category extends Model
 
     protected $fillable = [
         'name',
-        'ar-name'
+        'ar_name'
     ];
 
     //returns the medicine under this category

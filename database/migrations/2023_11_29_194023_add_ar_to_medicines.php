@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('medicines', function (Blueprint $table) {
-            $table->string('ar_name');
-            $table->string('ar_scientificName');
-            $table->text('ar_description');
+            $table->string('ar_name')->after('name');
+            $table->string('ar_scientificName')->after('scientificName');
+            $table->text('ar_description')->after('description');
         });
     }
 
