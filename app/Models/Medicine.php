@@ -10,9 +10,12 @@ class Medicine extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'ar_name',
         'scientificName',
+        'ar_scientificName',
         'brand',
         'description',
+        'ar_description',
         'quantity',
         'expirationDate',
         'price',
@@ -47,7 +50,7 @@ class Medicine extends Model
     }
 
     public function getImageURL(){
-        if($this->has('image')){
+        if($this->image != null){
             //first arg is the path of the file relative to the public directory
             return url('storage',$this->image);
         }

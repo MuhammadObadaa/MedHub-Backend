@@ -30,3 +30,6 @@ Route::group(['middleware' => 'user'], function () {
     Route::get('/showUser', [UserController::class, 'show']);
     Route::post('/addCart', [UserController::class, 'addCart']);
 });
+
+
+
