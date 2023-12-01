@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthMiddleware
 {
+    //search for Sanctum package
     /**
      * Handle an incoming request.
      *
@@ -17,7 +18,6 @@ class AuthMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         //echo "authenticated";
-        //TODO: add Auth::user
         $user = User::where('remember_token', request('token'))->first();
         if (!$user)
             $user = User::where('remember_token', request()->cookie('token'))->first();

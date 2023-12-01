@@ -11,5 +11,4 @@ Route::group(['prefix'=>'/medicines/','as'=>'medicines.'],function(){
     Route::get('list/{category}',[MedicineController::class,'listCategory'])->name('listCategory');
 });
 
-
 ?>

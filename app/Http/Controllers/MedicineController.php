@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 class MedicineController extends Controller
 {
 
-    //store function is used by the storeman to add medicines to the database,
+    //store function is used by the store man to add medicines to the database,
     //the validation takes process on the front-end,
     //front-end developer must send the category_id for every medicine created
     public function store(){
@@ -23,7 +23,7 @@ class MedicineController extends Controller
             ]);
             if($validatedImage->fails()){
                 return response()->json([
-                    'message'=>'unvalid image file'
+                    'message'=>'Invalid image file'
                 ]);
             }
             else{
@@ -53,7 +53,7 @@ class MedicineController extends Controller
         ]);
     }
 
-    //list function is used by the farmacist to browse all the medicines in general, with no specfic category
+    //list function is used by the pharmacist to browse all the medicines in general, with no specific category
     public function list(){
         $medicines = Medicine::OrderBy('popularity','DESC')->get();
 
@@ -64,7 +64,7 @@ class MedicineController extends Controller
         return MedicineResource::collection($medicines)->additional($message);
     }
 
-    //show is used by the pharamcist to see the details of a certain medicine
+    //show is used by the pharmacist to see the details of a certain medicine
     public function show(Medicine $medicine){
         $message = [
             'message' => 'medicine displayed successfully!',

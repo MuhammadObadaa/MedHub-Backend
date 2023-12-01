@@ -87,11 +87,11 @@ class UserController extends Controller
 
     public function changeImage()
     {
-        //TODO: Auth::user();
         $user = $this->getUser();
 
         $user->update(['image' => request('image')]);
 
         return response()->json(['message' => 'Image changed successfully!']);
     }
+
 }

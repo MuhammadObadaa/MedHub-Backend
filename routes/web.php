@@ -27,9 +27,6 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::group(['middleware' => 'user'], function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/changePassword', [UserController::class, 'changePassword'])->name('changePassword'); //->middleware('user');
-    Route::get('/showUser', [UserController::class, 'show']);
+    Route::get('/profile', [UserController::class, 'show']);
     Route::post('/addCart', [UserController::class, 'addCart']);
 });
-
-
-
