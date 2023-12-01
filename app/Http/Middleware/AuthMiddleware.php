@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthMiddleware
 {
+    //search for Sanctum package
     /**
      * Handle an incoming request.
      *

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,8 +26,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 //---- Tokens_need routes
 Route::group(['middleware' => 'user'], function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::post('/changePassword', [AuthController::class, 'changePassword'])->name('changePassword'); //->middleware('user');
+    Route::post('/changePassword', [UserController::class, 'changePassword'])->name('changePassword'); //->middleware('user');
+    Route::get('/profile', [UserController::class, 'show']);
+    Route::post('/addCart', [UserController::class, 'addCart']);
 });
-
-
-
