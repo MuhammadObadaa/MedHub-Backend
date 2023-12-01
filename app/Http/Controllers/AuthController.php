@@ -20,11 +20,25 @@ class AuthController extends Controller
         */
         $this->middleware('user', ['only' => []]);
     }
+
+    private function getUser(): User
+    {
+        //TODO: make it single function across UserController and AuthController
+        //TODO: improve the way methods are re_getting the user after it was gotten in the middleware
+        $user = User::where('remember_token', request('token'))->first();
+        if (!$user)
+            $user = User::where('remember_token', request()->cookie('token'))->first();
+
+        //there is no need to check if the $user is null due to middleware check
+
+        return $user;
+    }
     public function create()
     {
         $imageFile = '';
 
         if (request()->has('image')) {
+            //TODO: this should be the image itself not it's url
             request()->validate([
                 'image' => 'image'
             ]);
@@ -54,7 +68,7 @@ class AuthController extends Controller
         if (!$user)
             return response()->json(['message' => 'No such phoneNumber'], 400);
         if (!Hash::check(request('password'), $user->password))
-            return response()->json(['message' => 'No matching'], 400);
+            return response()->json(['message' => 'Wrong Password!'], 400);
 
         //TODO: make rememberMe optional
         //TODO: No need to send the rememberMe option to the login. where we already create our own token in the cookie
@@ -68,28 +82,10 @@ class AuthController extends Controller
             ->withCookie($cookie);
     }
 
-    public function changePassword()
-    {
-        //TODO: improve the way methods re_get the user after it was gotten in the middleware
-        $user = User::where('remember_token', request('token'))->first();
-        if (!$user)
-            $user = User::where('remember_token', request()->cookie('token'))->first();
-        //there is no need to check if the $user is null due to middleware check
-
-        if (!Hash::check(request('oldPassword'), $user->password))
-            return response()->json(['message' => 'No matching'], 400);
-
-        $user->update(['password' => Hash::make(request('newPassword'))]);
-        return response()->json(['message' => 'Password changed successfully']);
-    }
-
     public function logout()
     {
         // to forget the token and cookies then logout
-
-        $user = User::where('remember_token', request('token'))->first();
-        if (!$user)
-            $user = User::where('remember_token', request()->cookie('token'))->first();
+        $user = $this->getUser();
 
         Auth::setUser($user);
         Auth::logout();

@@ -10,7 +10,7 @@ class Cart extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id ',
+        'user_id',
         'bill',
         'status'
     ];
@@ -27,13 +27,13 @@ class Cart extends Model
     ];
 
     //returns the owner of the cart
-    public function user(){
-        return $this->belongsTo(User::class,'user_id','id');
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
     //returns the medicines that are listed in the cart which the user sent
-    public function medicines(){
-         return $this->belongsToMany(Medicine::class,'cart_medicine','cart_id','medicine_id')->withTimestamps();
+    public function medicines()
+    {
+        return $this->belongsToMany(Medicine::class, 'cart_medicine', 'cart_id', 'medicine_id')->withTimestamps();
     }
-
-
 }

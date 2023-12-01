@@ -17,6 +17,7 @@ class AuthMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         //echo "authenticated";
+        //TODO: add Auth::user
         $user = User::where('remember_token', request('token'))->first();
         if (!$user)
             $user = User::where('remember_token', request()->cookie('token'))->first();
