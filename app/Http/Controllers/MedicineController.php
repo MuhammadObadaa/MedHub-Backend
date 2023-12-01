@@ -14,20 +14,20 @@ class MedicineController extends Controller
     //store function is used by the store man to add medicines to the database,
     //the validation takes process on the front-end,
     //front-end developer must send the category_id for every medicine created
-    public function store(){
+    public function store()
+    {
         //TODO: make some columns unique in the database, and validate them
         $imageFile = '';
-        if(request()->has('image')){
-            $validatedImage = Validator::make(request()->get('image'),[
-                'image'=>'image'
+        if (request()->has('image')) {
+            $validatedImage = Validator::make(request()->get('image'), [
+                'image' => 'image'
             ]);
-            if($validatedImage->fails()){
+            if ($validatedImage->fails()) {
                 return response()->json([
-                    'message'=>'Invalid image file'
+                    'message' => 'Invalid image file'
                 ]);
-            }
-            else{
-                $imageFile = request()->file('image')->store('app','public');
+            } else {
+                $imageFile = request()->file('image')->store('app', 'public');
             }
         }
 
@@ -40,7 +40,7 @@ class MedicineController extends Controller
             'ar-scientificName' => request()->get('name'),
             'description' => request()->get('name'),
             'ar-description' => request()->get('name'),
-            'brand'=>request()->get('brand'),
+            'brand' => request()->get('brand'),
             'quantity' => request()->get('quantity'),
             'expirationDate' => request()->get('expirationDate'),
             'price' => request()->get('price'),
@@ -48,24 +48,26 @@ class MedicineController extends Controller
         ]);
 
         return response()->json([
-            'message'=>'medicine added successfully',
+            'message' => 'medicine added successfully',
             'status' => 200
         ]);
     }
 
     //list function is used by the pharmacist to browse all the medicines in general, with no specific category
-    public function list(){
-        $medicines = Medicine::OrderBy('popularity','DESC')->get();
+    public function list()
+    {
+        $medicines = Medicine::OrderBy('popularity', 'DESC')->get();
 
         $message = [
-            'message'=>'medicines listed successfully!',
+            'message' => 'medicines listed successfully!',
             'status' => 200
         ];
         return MedicineResource::collection($medicines)->additional($message);
     }
 
     //show is used by the pharmacist to see the details of a certain medicine
-    public function show(Medicine $medicine){
+    public function show(Medicine $medicine)
+    {
         $message = [
             'message' => 'medicine displayed successfully!',
             'status' => 200
@@ -73,7 +75,8 @@ class MedicineController extends Controller
         return (new MedicineResource($medicine))->additional($message);
     }
 
-    public function listCategory(Category $category){
+    public function listCategory(Category $category)
+    {
         $medicines = $category->medicines()->get();
         $message = [
             'message' => 'medicines listed successfully under a category!',
@@ -81,6 +84,4 @@ class MedicineController extends Controller
         ];
         return MedicineResource::collection($medicines)->additional($message);
     }
-
-
 }

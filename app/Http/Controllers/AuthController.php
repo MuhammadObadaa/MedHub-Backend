@@ -3,36 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Http\Middleware\AuthMiddleware;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
-//search about laravel/ui package
+//search about laravel/ui and Sanctum package
 class AuthController extends Controller
 {
-
+    // when the middleware doesn't called use this:
+    /*
     public function __construct()
     {
         /*
         the 'only' attribute makes the middleware check only the routes specified with middleware (what ever kind of it)
         and not all routes in the controller.
         without it all functions in this controller will be authenticated with this middleware
-        */
+
         $this->middleware('user', ['only' => []]);
     }
-
-    private function getUser(): User
-    {
-        //TODO: make it single function across UserController and AuthController
-        //TODO: improve the way methods are re_getting the user after it was gotten in the middleware
-        $user = User::where('remember_token', request('token'))->first();
-        if (!$user)
-            $user = User::where('remember_token', request()->cookie('token'))->first();
-
-        //there is no need to check if the $user is null due to middleware check
-
-        return $user;
-    }
+    */
     public function create()
     {
         $imageFile = '';
@@ -85,7 +75,7 @@ class AuthController extends Controller
     public function logout()
     {
         // to forget the token and cookies then logout
-        $user = $this->getUser();
+        $user = AuthMiddleware::getUser();
 
         Auth::setUser($user);
         Auth::logout();

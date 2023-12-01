@@ -22,8 +22,19 @@ class AuthMiddleware
         if (!$user)
             $user = User::where('remember_token', request()->cookie('token'))->first();
         if (!$user)
-            return response()->json(['message' => 'Not Authenticated!'], 400);
+            return response()->json(['message' => 'Not Authorized!'], 401);
 
         return $next($request);
+    }
+
+    public static function getUser(): User
+    {
+        $user = User::where('remember_token', request('token'))->first();
+        if (!$user)
+            $user = User::where('remember_token', request()->cookie('token'))->first();
+
+        //there is no need to check if the $user is null due to middleware check
+
+        return $user;
     }
 }

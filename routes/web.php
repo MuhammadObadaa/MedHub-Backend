@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\search;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,6 +20,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//TODO: for Obada: follow the conventions
+//TODO: for Obada: organize your routes
+
 //---- Authentication Routes
 Route::post('/register', [AuthController::class, 'create'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -26,7 +30,10 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 //---- Tokens_need routes
 Route::group(['middleware' => 'user'], function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::post('/changePassword', [UserController::class, 'changePassword'])->name('changePassword'); //->middleware('user');
-    Route::get('/profile', [UserController::class, 'show']);
-    Route::post('/addCart', [UserController::class, 'addCart']);
+    Route::post('/favor/{medicineId}', [UserController::class, 'favor'])->name('favor');
+    Route::post('/unFavor/{medicineId}', [UserController::class, 'unFavor'])->name('unFavor');
+    Route::post('/changePassword', [UserController::class, 'changePassword'])->name('changePassword')->name('changePassword'); //->middleware('user');
+    Route::get('/profile', [UserController::class, 'show'])->name('profile');
+    Route::post('/addCart', [UserController::class, 'addCart'])->name('addCart');
+    Route::get('/search', [search::class, 'search'])->name('searchByName');
 });

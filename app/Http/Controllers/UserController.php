@@ -5,41 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\Medicine;
+use App\http\Middleware\AuthMiddleware;
 use App\Models\Cart;
 use App\Models\User;
+use Exception;
 
 class UserController extends Controller
 {
-
-    public function __construct()
-    {
-        /*
-        the 'only' attribute makes the middleware check only the routes specified with middleware (what ever kind of it)
-        and not all routes in the controller.
-        without it all functions in this controller will be authenticated with this middleware
-        */
-        $this->middleware('user', ['only' => []]);
-    }
-
     public function show()
     {
-        $user = User::where('id', $this->getUser()->id)->select('name', 'pharmacyName', 'pharmacyLocation', 'phoneNumber', 'image')->first();
+        $user = AuthMiddleware::getUser()->select('name', 'pharmacyName', 'pharmacyLocation', 'phoneNumber', 'image')->first();
         return response()->json(['user' => $user]);
-    }
-
-    private function getUser(): User
-    {
-        $user = User::where('remember_token', request('token'))->first();
-        if (!$user)
-            $user = User::where('remember_token', request()->cookie('token'))->first();
-
-        return $user;
     }
 
     public function changePassword()
     {
 
-        $user = $this->getUser();
+        $user = AuthMiddleware::getUser();
 
         if (!Hash::check(request('oldPassword'), $user->password))
             return response()->json(['message' => 'Wrong Password!'], 400);
@@ -48,25 +30,38 @@ class UserController extends Controller
         return response()->json(['message' => 'Password changed successfully']);
     }
 
-    public function favor($medicineId)
+    //TODO: a new raw will be add to database when you favor a medicine even if it was already in the table
+    public function favor($medicine)
     {
-        $user = $this->getUser();
+        $user = AuthMiddleware::getUser();
 
-        $user->favors()->attach($medicineId);
-        return response()->json(['message' => 'medicine added to favorite list successfully']);
+        try {
+            // you can send medicine->id and the medicine object itself
+            $user->favors()->attach($medicine);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Something went wrong!'], 400);
+        }
+
+        return response()->json(['message' => 'medicine added to favorites successfully']);
     }
 
+    //TODO: return a sign for already unfavored medicine when unfavored it
     public function unFavor($medicineId)
     {
-        $user = $this->getUser();
+        $user = AuthMiddleware::getUser();
 
-        $user->favors()->detach($medicineId);
-        return response()->json(['message' => 'medicine removed from favorite list successfully']);
+        try {
+            $user->favors()->detach($medicineId);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Something went wrong!'], 400);
+        }
+
+        return response()->json(['message' => 'medicine removed from favorites successfully']);
     }
 
     public function addCart()
     {
-        $user = $this->getUser();
+        $user = AuthMiddleware::getUser();
         $bill = 0;
 
         $cartContents = request('cart');
@@ -87,11 +82,10 @@ class UserController extends Controller
 
     public function changeImage()
     {
-        $user = $this->getUser();
+        $user = AuthMiddleware::getUser();
 
         $user->update(['image' => request('image')]);
 
         return response()->json(['message' => 'Image changed successfully!']);
     }
-
 }
