@@ -65,7 +65,7 @@ class User extends Authenticatable
 
     public function getImageURL()
     {
-        if ($this->has('image')) {
+        if ($this->image != null) {
             //first arg is the path of the file relative to the public directory
             return url('storage', $this->image);
         }

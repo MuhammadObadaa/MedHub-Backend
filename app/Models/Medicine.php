@@ -25,16 +25,16 @@ class Medicine extends Model
     ];
 
 
-    //this tells the model, for every query u do, get the category info with it
-    protected $with = [
-        'category'
-    ];
+    // //this tells the model, for every query u do, get the category info with it
+    // protected $with = [
+    //     'category'
+    // ];
 
-    //this tells the model, whenever u query the info of the medicines, get the count of users
-    //who added them to the favorites list
-    protected $withCount = [
-        'favored'
-    ];
+    // //this tells the model, whenever u query the info of the medicines, get the count of users
+    // //who added them to the favorites list
+    // protected $withCount = [
+    //     'favored'
+    // ];
 
     //return the category of the medicine
     public function category(){
@@ -47,6 +47,10 @@ class Medicine extends Model
     //return the carts of the user that the medicine belongs to
     public function carts(){
         return $this->belongsToMany(Cart::class,'cart_medicine','medicine_id','cart_id')->withTimestamps();
+    }
+
+    public function isFavored(){
+        return $this->favored()->where('user_id',auth()->id())->exists();
     }
 
     public function getImageURL(){

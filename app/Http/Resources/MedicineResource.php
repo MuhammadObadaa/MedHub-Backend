@@ -25,6 +25,8 @@ class MedicineResource extends JsonResource
             'quantity' => $this->quantity,
             'expirationDate' => $this->expirationDate,
             'price' => $this->price,
+            //'likes' => $this->favored()->count(),
+            //'isLiked' => $this->isFavored(), //uncomment this when working with logged in users
             'image' => $this->getImageURL()
         ];
     }

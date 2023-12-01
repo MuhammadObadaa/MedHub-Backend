@@ -73,14 +73,8 @@ class MedicineController extends Controller
         return (new MedicineResource($medicine))->additional($message);
     }
 
-    public function listCategory(Category $category){
-        $medicines = $category->medicines()->get();
-        $message = [
-            'message' => 'medicines listed successfully under a category!',
-            'status' => 200
-        ];
-        return MedicineResource::collection($medicines)->additional($message);
+    public function destroy(Medicine $medicine){
+        $medicine->delete();
     }
-
 
 }

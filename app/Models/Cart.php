@@ -15,16 +15,16 @@ class Cart extends Model
         'status'
     ];
 
-    //this tells the model, whenever u fetch the info of a cart, get all the medicines
-    //that was in it.
-    protected $with = [
-        'medicines'
-    ];
+    // //this tells the model, whenever u fetch the info of a cart, get all the medicines
+    // //that was in it.
+    // protected $with = [
+    //     'medicines'
+    // ];
 
-    //this tells the model, whenever you fetch the cart, get the count of medicines in it
-    protected $withCount = [
-        'medicines'
-    ];
+    // //this tells the model, whenever you fetch the cart, get the count of medicines in it
+    // protected $withCount = [
+    //     'medicines'
+    // ];
 
     //returns the owner of the cart
     public function user(){
