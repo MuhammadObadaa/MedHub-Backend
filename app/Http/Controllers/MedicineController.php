@@ -19,8 +19,8 @@ class MedicineController extends Controller
     //store function is used by the store man to add medicines to the database,
     //the validation takes process on the front-end,
     //front-end developer must send the category_id for every medicine created
-    public function store()
-    {
+    public function store(){
+        //TODO: make some columns unique in the database, and validate them
         $imageFile = '';
         if (request()->has('image')) {
             $validatedImage = Validator::make(request()->get('image'), [
