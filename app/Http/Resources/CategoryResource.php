@@ -15,9 +15,9 @@ class CategoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'category_id' => $this->id,
+            'id' => $this->id,
             'name' => $this->when($request->header('lang') == 'ar', $this->ar_name,$this->name),
-            'medicines' => MedicineResource::collection($this->medicines5()->get())
+            //'medicines' => MedicineResource::collection($this->medicines5()->get())
         ];
 
     }

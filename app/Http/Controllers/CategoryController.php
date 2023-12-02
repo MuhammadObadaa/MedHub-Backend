@@ -44,10 +44,10 @@ class CategoryController extends Controller
     }
 
     //this function return to the home page all the categories with the top 5 medicines in each category
-    public function homePage(){
-        $categories = Category::get();
+    public function list(){
+        $categories = Category::latest()->get();
         $message = [
-            'message' => 'medicines listed in homepage successfully!',
+            'message'=>'categories listed successfully!',
             'status' => 200
         ];
         return CategoryResource::collection($categories)->additional($message);

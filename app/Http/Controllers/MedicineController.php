@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\MedicineResource;
 use App\Models\Category;
 use App\Models\Medicine;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +18,6 @@ class MedicineController extends Controller
     //the validation takes process on the front-end,
     //front-end developer must send the category_id for every medicine created
     public function store(){
-        //TODO: make some columns unique in the database, and validate them
         $imageFile = '';
         if(request()->has('image')){
             $validatedImage = Validator::make(request()->get('image'),[
@@ -127,6 +128,39 @@ class MedicineController extends Controller
             'message' => 'medecine updated successfully!',
             'status' => 200
         ]);
+    }
+
+
+    //returns top 10 medicines
+    public function top10(){
+        $medicines = Medicine::OrderBy('popularity','DESC')->take(10)->get();
+        $message = [
+            'message'=>'top 10 medicines displayed successfully!',
+            'status'=>200
+        ];
+        return MedicineResource::collection($medicines)->additional($message);
+    }
+
+    //returns recent 10 medicines
+    public function recent10(){
+        $medicines = Medicine::latest()->take(10)->get();
+        $message = [
+            'message'=>'recent 10 medicines displayed successfully!',
+            'status'=>200
+        ];
+        return MedicineResource::collection($medicines)->additional($message);
+    }
+
+    public function favourites(){
+        //TODO: haven't been tested with postman
+
+        $medicines = auth()->user()->favors->get();
+        $message = [
+            'message'=>'recent 10 medicines displayed successfully!',
+            'status'=>200
+        ];
+
+        return MedicineResource::collection($medicines)->additional($message);
     }
 
 }
