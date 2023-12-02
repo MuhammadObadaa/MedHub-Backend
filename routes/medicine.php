@@ -6,6 +6,9 @@ use App\Http\Controllers\search;
 use Illuminate\Support\Facades\Route;
 
 
+//prefix goes before every end point for example the delete method will look like this: /medicines/{medicine} where {medicine} is the id of the medicine
+//don't bother by the name or anything, just look at the http method and the end point
+
 //first: prefix goes before every route, for example in route number 2, the route will be like this
 //api/medicines/{medicine}
 
