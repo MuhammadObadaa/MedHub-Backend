@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CategoryResource;
 use Illuminate\Http\Request;
 use App\Http\Resources\MedicineResource;
 use App\Models\Category;
@@ -43,8 +44,8 @@ class CategoryController extends Controller
     }
 
 
-    //TODO: home page function that will return the top 5 medicines under its categories
-    // public function homePage(){
-    //     $medicines = Category::
-    // }
+    public function homePage(){
+        $medicines = Category::get();
+        return CategoryResource::collection($medicines);
+    }
 }
