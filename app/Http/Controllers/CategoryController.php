@@ -43,9 +43,25 @@ class CategoryController extends Controller
         ]);
     }
 
-
+    //this function return to the home page all the categories with the top 5 medicines in each category
     public function homePage(){
-        $medicines = Category::get();
-        return CategoryResource::collection($medicines);
+        $categories = Category::get();
+        $message = [
+            'message' => 'medicines listed in homepage successfully!',
+            'status' => 200
+        ];
+        return CategoryResource::collection($categories)->additional($message);
+    }
+
+    public function update(Category $category){
+        $updated = [
+            'name' => request()->get('name'),
+            'ar_name' => request()->get('ar_name')
+        ];
+        $category->update($updated);
+        return response()->json([
+            'message' => 'updated the category successfully!',
+            'status' => 200
+        ]);
     }
 }

@@ -18,7 +18,7 @@ class MedicineResource extends JsonResource
 
         return [
             'id' =>$this->id,
-            'category' => $this->when(!Route::is('categories.list'),$this->when($request->header('lang')=='ar',$this->category()->select('id','ar_name')->get(),$this->category()->select('id','name')->get())),
+            'category' => $this->when(!Route::is('categories.list') && !Route::is('categories.show'),$this->when($request->header('lang')=='ar',$this->category()->select('id','ar_name')->get(),$this->category()->select('id','name')->get())),
             'name' => $this->when($request->header('lang')=='ar',$this->ar_name,$this->name),
             'scientificName' =>$this->when($request->header('lang')=='ar',$this->ar_scientificName,$this->scientificName),
             'description' =>$this->when($request->header('lang')=='ar',$this->ar_description,$this->description),
