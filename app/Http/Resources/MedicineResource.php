@@ -6,6 +6,7 @@ use App\Models\Medicine;
 use App\Http\Middleware\AuthMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Route;
 
 class MedicineResource extends JsonResource
 {
@@ -29,6 +30,8 @@ class MedicineResource extends JsonResource
             'quantity' => $this->quantity,
             'expirationDate' => $this->expirationDate,
             'price' => $this->price,
+            //'likes' => $this->favored()->count(),
+            //'isLiked' => $this->isFavored(), //uncomment this when working with logged in users
             'image' => $this->getImageURL()
         ];
     }

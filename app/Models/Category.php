@@ -18,4 +18,8 @@ class Category extends Model
     public function medicines(){
         return $this->hasMany(Medicine::class,'category_id','id')->OrderBy('popularity','DESC');
     }
+
+    public function medicines5(){
+        return $this->hasMany(Medicine::class,'category_id','id')->OrderBy('popularity','DESC')->take(5);
+    }
 }
