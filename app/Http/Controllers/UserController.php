@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Medicine;
 use App\Models\Cart;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -76,6 +77,7 @@ class UserController extends Controller
         foreach ($cartContents as $medicine) {
             $cart->medicines()->attach($medicine['id'], ['quantity' => $medicine['quantity']]);
             //TODO: is it better to get medicine price from Medicine method or keep it as this?
+            //if it works don't touch it :)
             $medicinePrice = Medicine::where('id', $medicine['id'])->first()->price;
             $bill += $medicine['quantity'] * $medicinePrice;
         }
@@ -88,7 +90,9 @@ class UserController extends Controller
     public function changeImage()
     {
         $user = $this->getUser();
-
+        if($user->image != null){
+            Storage::disk('public')->delete($user->image);
+        }
         $user->update(['image' => request('image')]);
 
         return response()->json(['message' => 'Image changed successfully!']);

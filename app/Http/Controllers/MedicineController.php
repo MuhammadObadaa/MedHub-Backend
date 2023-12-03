@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\MedicineResource;
 use App\Models\Category;
 use App\Models\Medicine;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class MedicineController extends Controller
@@ -15,7 +18,6 @@ class MedicineController extends Controller
     //the validation takes process on the front-end,
     //front-end developer must send the category_id for every medicine created
     public function store(){
-        //TODO: make some columns unique in the database, and validate them
         $imageFile = '';
         if(request()->has('image')){
             $validatedImage = Validator::make(request()->get('image'),[
@@ -35,11 +37,11 @@ class MedicineController extends Controller
             'category_id' => request()->get('category_id'), //the id is sent for every medicine
             //'category_id' => Category::where('name',request()->get('categoryName'))->orWhere('ar-name',request()->get('name'))->first()->id
             'name' => request()->get('name'),
-            'ar-name' => request()->get('ar-name'),
-            'scientificName' => request()->get('name'),
-            'ar-scientificName' => request()->get('name'),
-            'description' => request()->get('name'),
-            'ar-description' => request()->get('name'),
+            'ar_name' => request()->get('ar_name'),
+            'scientificName' => request()->get('scientificName'),
+            'ar_scientificName' => request()->get('ar_scientificName'),
+            'description' => request()->get('description'),
+            'ar_description' => request()->get('ar_description'),
             'brand'=>request()->get('brand'),
             'quantity' => request()->get('quantity'),
             'expirationDate' => request()->get('expirationDate'),
@@ -73,14 +75,92 @@ class MedicineController extends Controller
         return (new MedicineResource($medicine))->additional($message);
     }
 
-    public function listCategory(Category $category){
-        $medicines = $category->medicines()->get();
-        $message = [
-            'message' => 'medicines listed successfully under a category!',
+    public function destroy(Medicine $medicine){
+        $medicine->delete();
+        return response()->json([
+            'message' => 'medicine deleted successfully!',
             'status' => 200
+        ]);
+    }
+
+
+    //updating the medicine is a tricky function, and it's related to the shape of the page on the fron-end
+    //if the front-end displayed a page with text-areas for all fields to update, and in the text-areas, the primary text for them
+    //must be the same as the original information, then the shape of the update function must be as so
+    //however if the front-end allowed customized edititing, and that is, for every attribute of the medicine,
+    //the storeman can update one of them specifically, the update function will differ, and it must be coded with if statements
+    public function update(Medicine $medicine){
+        $updated = [
+            'category_id' => request()->get('category_id'), //the id is sent for every medicine
+            //'category_id' => Category::where('name',request()->get('categoryName'))->orWhere('ar-name',request()->get('name'))->first()->id
+            'name' => request()->get('name'),
+            'ar_name' => request()->get('ar_name'),
+            'scientificName' => request()->get('scientificName'),
+            'ar_scientificName' => request()->get('ar_scientificName'),
+            'description' => request()->get('description'),
+            'ar_description' => request()->get('ar_description'),
+            'brand'=>request()->get('brand'),
+            'quantity' => request()->get('quantity'),
+            'expirationDate' => request()->get('expirationDate'),
+            'price' => request()->get('price'),
+        ];
+
+        if(request()->has('image')){
+            $validatedImage = Validator::make(request()->get('image'),[
+                'image'=>'image'
+            ]);
+            if($validatedImage->fails()){
+                return response()->json([
+                    'message'=>'Invalid image file'
+                ]);
+            }
+            else{
+                if($medicine->image != null){
+                    Storage::disk('public')->delete($medicine->image);
+                }
+                $imageFile = request()->file('image')->store('app','public');
+                $updated['image'] = $imageFile;
+            }
+        }
+
+        $medicine->update($updated);
+        return response()->json([
+            'message' => 'medecine updated successfully!',
+            'status' => 200
+        ]);
+    }
+
+
+    //returns top 10 medicines
+    public function top10(){
+        $medicines = Medicine::OrderBy('popularity','DESC')->take(10)->get();
+        $message = [
+            'message'=>'top 10 medicines displayed successfully!',
+            'status'=>200
         ];
         return MedicineResource::collection($medicines)->additional($message);
     }
 
+    //returns recent 10 medicines
+    public function recent10(){
+        $medicines = Medicine::latest()->take(10)->get();
+        $message = [
+            'message'=>'recent 10 medicines displayed successfully!',
+            'status'=>200
+        ];
+        return MedicineResource::collection($medicines)->additional($message);
+    }
+
+    public function favourites(){
+        //TODO: haven't been tested with postman
+
+        $medicines = auth()->user()->favors->get();
+        $message = [
+            'message'=>'recent 10 medicines displayed successfully!',
+            'status'=>200
+        ];
+
+        return MedicineResource::collection($medicines)->additional($message);
+    }
 
 }

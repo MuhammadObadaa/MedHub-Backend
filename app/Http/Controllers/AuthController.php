@@ -33,6 +33,7 @@ class AuthController extends Controller
 
         return $user;
     }
+    //TODO: change the name to store
     public function create()
     {
         $imageFile = '';
