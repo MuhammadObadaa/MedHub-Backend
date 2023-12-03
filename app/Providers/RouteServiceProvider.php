@@ -40,6 +40,10 @@ class RouteServiceProvider extends ServiceProvider
             ->prefix('api')
             ->group(base_path('routes/medicine.php'));
 
+            Route::middleware('api')
+            ->prefix('api')
+            ->group(base_path('routes/carts.php'));
+
         });
     }
 }
