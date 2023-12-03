@@ -15,17 +15,19 @@ use Illuminate\Support\Facades\Route;
 
 //fourth: all the returned json fils are formatted according to the standard shapes (resoruces)
 
+//fifth: order of the routes is very important, are u listening Obada :)
+
 Route::group(['prefix'=>'/medicines/','as'=>'medicines.'],function(){
     //1-returns a json file containing the medicines according to popularity, formatted according to the resource
     Route::get('',[MedicineController::class,'list'])->name('list');
-    //2-receives the id, returns a json file with medicine info
-    Route::get('{medicine}',[MedicineController::class,'show'])->name('show');
-    //3-returns a json file with top 10 medicines according to popularity
-    Route::get('/top10',[MedicineController::class,'top10'])->name('top10');
-    //4-returns a json file with 10 recently added medicines according to latency
+    //2-returns a json file with top 10 medicines according to popularity
+    Route::get('top10',[MedicineController::class,'top10'])->name('top10');
+    //3-returns a json file with 10 recently added medicines according to latency
     Route::get('recent10',[MedicineController::class,'recent10'])->name('recent10');
+    //4-receives the id, returns a json file with medicine info
+    Route::get('{medicine}',[MedicineController::class,'show'])->name('show');
     //5- returns a json file with favourite medicines of the user
-    Route::get('/user/favourites',[MedicineController::class,'favourites'])->name('user.favourites');
+    Route::get('auth/favourites',[MedicineController::class,'favourites'])->name('auth.favourites');
     //6-receives a json file with all medicine attributes, image is not manditory.
     Route::post('',[MedicineController::class,'store'])->name('store');
     //7-receives the id of the medicine in the url, delete the medicine from the database

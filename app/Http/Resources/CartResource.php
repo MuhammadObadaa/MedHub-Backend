@@ -17,13 +17,15 @@ class CartResource extends JsonResource
     public function toArray(Request $request): array
     {
         return
-        [
-            'id' => $this->id,
-            'bill' => $this->bill,
-            'status' => $this->status,
-            'ordered_at' =>date_format($this->created_at,'Y-m-d'),
-            'medicines' => $this->when(Route::is('carts.show'),MedicineResource::collection($this->medicines()->get()))
-        ];
-
+            [
+                'id' => $this->id,
+                'bill' => $this->bill,
+                'status' => $this->status,
+                'payment_status' => $this->payed,
+                //TODO: make a user resource and include it's info
+                'user_id' => $this->when(Route::is('carts.list.*'), $this->user_id),
+                'ordered_at' => date_format($this->created_at, 'Y-m-d'),
+                'medicines' => $this->when(Route::is('carts.show'), MedicineResource::collection($this->medicines()->get()))
+            ];
     }
 }
