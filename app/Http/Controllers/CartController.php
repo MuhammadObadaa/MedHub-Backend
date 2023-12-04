@@ -15,7 +15,7 @@ class CartController extends Controller
     //storing the cart in the database
     public function store()
     {
-        //Obada function
+        //TODO:Obada function
     }
 
     //used by the storeman to display the carts of a sepcific user
@@ -43,7 +43,7 @@ class CartController extends Controller
     //returns all carts in preparation according to latency
     public function inPreparation()
     {
-        $carts = Cart::where('status', 'in preparation')->latest()->get();
+        $carts = Cart::where('status', 'in preparation')->oldest()->get();
         $message = [
             'message' => 'in preparation orders displayed successfully!',
             'status_code' => 200
@@ -72,6 +72,7 @@ class CartController extends Controller
     //used by the user to display his own carts
     public function authList()
     {
+        //TODO: obada function
         $carts = auth()->user()->carts->get();
         $message = [
             'message' => 'your orders displayed successfully!',
@@ -91,35 +92,116 @@ class CartController extends Controller
     }
 
     //update function is used by the storeman to update the status of the orders or the payment status
-
+    //the order of the status of the order must be handled carefully by the front end
     public function update(Cart $cart)
     {
-        /*if(request()->get('status') == "getting delivered"){
-            //TODO:code to update quantity of medicines, need to be discussed
-            //if 2 orders were sent to the storeman one of them takes all in stock medicines, the other will ruin database
-            //in this case we need to much of handling and will cause inconvenience to the user, cause his order will be canceled
-            //and that gives us another case to deal with, canceling orders
+        //unreachable if statment if handled correctly by front end
+       /* $flag = false;
+        if(request()->has('status') && ($cart->status == 'refused' || $cart->status == 'delivered')){
+            $flag == true;
+        }
+        else if(request()->has('status') && ($cart->status == "getting delivered")){
+            if(request()->get('status') == "in preparation"){
+                $flag == true;
+            }
+        }
+        if($cart->payed && request()->has('payed') && (request()->get('payed')==false)){
+            $flag = true;
+        }
+
+        if($flag){
+            return response()->json([
+                'message' => "cannot reverse status of order",
+                'status' => 400 //bad request
+            ]);
         }*/
 
-        if(request()->has('payed')){
+        //if he is updating the payment status
+        if (request()->has('payed')) {
             $cart->payed = request()->get('payed');
             $cart->save();
             return response()->json([
                 'message' => 'payment status changed successfully!',
-                'status' =>200
+                'status' => 200
             ]);
         }
-        if(request()->get('status') == "delivered"){
-            if($cart->payed == false){
+
+        //choose one of the two approaches, comment the other
+
+        //first approach, refusing the whole order for a single out of stock medicine
+        if (request()->get('status') == "getting delivered") {
+            $medicines = $cart->medicines()->get();
+            foreach ($medicines as $medicine) {
+                if ($medicine->quantity < $medicine->pivot->quantity) {
+                    $cart->update(['status' => 'refused']);
+                    return response()->json([
+                        'message' => 'cannot process the order because '.$medicine->name." ".$medicine->quantity." ".$medicine->pivot->quantity.' is out of stock',
+                        'status' => 409 //confilct
+                    ]);
+                }
+            }
+            foreach ($medicines as $medicine) {
+                $medicine->update(['quantity' => ($medicine->quantity - $medicine->pivot->quantity)]);
+            }
+        }
+        //secod approach: if the ordered medicine is greater than the one in stock, give the customer all, in stock
+        //and if quantity in stock is zero, remove the medicine from the order
+        //if all medicines are out of the stock, refuse the order
+
+        $messages = []; $i = 0; $billUpdate = 0;
+        if (request()->get('status') == "getting delivered"){
+            $medicines = $cart->medicines()->get();
+            $flag = true;
+            foreach ($medicines as $medicine) {
+                if ($medicine->quantity != 0) {
+                    $flag = false;
+                }
+            }
+            if($flag){
+                $cart->update(['status' => 'refused']);
+                return response()->json([
+                    'message' => 'all medicines you orderd are out of stock, sorry for inconvenience',
+                    'status' => 409 //confilct
+                ]);
+            }
+            foreach ($medicines as $medicine) {
+                if($medicine->quantity != 0){
+                    if ($medicine->quantity < $medicine->pivot->quantity) {
+                        $billUpdate += (($medicine->pivot->quantity - $medicine->quantity)*$medicine->price);
+                        $medicine->pivot->quantity = $medicine->quantity;
+                        $medicine->quantity = 0;
+                        $medicine->save();
+                        $medicine->pivot->save();
+                        $messages[$i++] = "the quantity of ".$medicine->name." does not meet the customer need, we have limited the order quantity to ".$medicine->pivot->quantity;
+                    }
+                    else{
+                        $medicine->quantity = $medicine->quantity - $medicine->pivot->quantity;
+                        $medicine->save();
+                    }
+                }
+                else{
+                    $billUpdate += ($medicine->pivot->quantity * $medicine->price);
+                    $cart->medicines()->detach($medicine);
+                    $messages[$i++] = "medicine ".$medicine->name." is out of stock, we have removed it from your order";
+                }
+            }
+            $cart->update(['bill' => $cart->bill - $billUpdate]);
+        }
+
+        //third approach which is the best approach in my opinion, all updates must be handled the moment the customer send his orders
+
+        if (request()->get('status') == "delivered") {
+            if ($cart->payed == false) {
                 return response()->json([
                     'message' => 'cannot deliver the order without payment!',
-                    'status' =>402 //payment required
+                    'status' => 402 //payment required
                 ]);
             }
         }
+        $messages[$i++] = "'status of order updated successfully!'";
         $cart->update(["status" => request()->get('status')]);
         return response()->json([
-            'message' => 'status of order updated successfully!',
+            'message' => $messages,
             'status' => 200
         ]);
     }
