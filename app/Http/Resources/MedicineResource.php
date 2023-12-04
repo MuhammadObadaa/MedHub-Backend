@@ -25,6 +25,8 @@ class MedicineResource extends JsonResource
             'description' =>$this->when($request->header('lang')=='ar',$this->ar_description,$this->description),
             'brand'=> $this->brand,
             'quantity' => $this->quantity,
+            //short if statement is necassery 'causes even if the route is not carts.* it checks the true arg
+            'ordered_quantity' => $this->when(Route::is('carts.*'),$this->pivot?$this->pivot->quantity:null),
             'expirationDate' => $this->expirationDate,
             'price' => $this->price,
             //'likes' => $this->favored()->count(),

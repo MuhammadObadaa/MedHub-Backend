@@ -32,8 +32,9 @@ class Cart extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
     //returns the medicines that are listed in the cart which the user sent
+    //with pivot fetch the other columns in pivot tables
     public function medicines()
     {
-        return $this->belongsToMany(Medicine::class, 'cart_medicine', 'cart_id', 'medicine_id')->withTimestamps();
+        return $this->belongsToMany(Medicine::class, 'cart_medicine', 'cart_id', 'medicine_id')->withPivot('quantity')->withTimestamps();
     }
 }
