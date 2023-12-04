@@ -20,8 +20,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-//TODO: for Obada: follow the conventions
-//TODO: for Obada: organize your routes
+//TODO: for Obadaa: follow the conventions
+//TODO: for Obadaa: organize your routes
 
 //---- Authentication Routes
 Route::post('/register', [AuthController::class, 'create'])->name('register');
@@ -36,4 +36,5 @@ Route::group(['middleware' => 'user'], function () {
     Route::get('/profile', [UserController::class, 'show'])->name('profile');
     Route::post('/addCart', [UserController::class, 'addCart'])->name('addCart');
     Route::get('/search', [search::class, 'search'])->name('searchByName');
+    Route::get('/search/{category}', [search::class, 'searchInCategory'])->name('searchByNameInCategory');
 });

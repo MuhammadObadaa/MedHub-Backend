@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Http\Middleware\AuthMiddleware;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -27,14 +28,13 @@ class AuthController extends Controller
     {
         $imageFile = '';
 
-        if (request()->has('image')) {
-            //TODO: this should be the image itself not it's url
-            request()->validate([
-                'image' => 'image'
-            ]);
+        $imageFile = '';
 
+        $validatedImage = Validator::make(request()->get('image'), ['image' => 'image']);
+        if ($validatedImage->fails())
+            return response()->json(['message' => 'Invalid image file']);
+        else
             $imageFile = request()->file('image')->store('app', 'public');
-        }
 
         if (User::where('phoneNumber', request('phoneNumber'))->first())
             return response()->json(['message' => 'This phoneNumber already exist'], 400);

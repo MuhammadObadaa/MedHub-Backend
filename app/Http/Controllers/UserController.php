@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\Medicine;
 use App\http\Middleware\AuthMiddleware;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 use App\Models\Cart;
 use App\Models\User;
 use Exception;
@@ -70,7 +72,6 @@ class UserController extends Controller
 
         foreach ($cartContents as $medicine) {
             $cart->medicines()->attach($medicine['id'], ['quantity' => $medicine['quantity']]);
-            //TODO: is it better to get medicine price from Medicine method or keep it as this?
             $medicinePrice = Medicine::where('id', $medicine['id'])->first()->price;
             $bill += $medicine['quantity'] * $medicinePrice;
         }
@@ -84,8 +85,44 @@ class UserController extends Controller
     {
         $user = AuthMiddleware::getUser();
 
-        $user->update(['image' => request('image')]);
+        $validatedImage = Validator::make(request()->get('image'), ['image' => 'image']);
+
+        if ($validatedImage->fails())
+            return response()->json(['message' => 'Invalid image file']);
+
+        $imageFile = request()->file('image')->store('app', 'public');
+        if (File::exists($user->image))
+            File::delete($user->image);
+
+        $user->update(['image' => $imageFile]);
 
         return response()->json(['message' => 'Image changed successfully!']);
+    }
+
+    public function changeName()
+    {
+        $user = AuthMiddleWare::getUser();
+
+        $user->update(['name' => request('name')]);
+
+        return response()->json(['message' => 'name changed successfully!']);
+    }
+
+    public function changePhName()
+    {
+        $user = AuthMiddleWare::getUser();
+
+        $user->update(['PharmacyName' => request('PharmacyName')]);
+
+        return response()->json(['message' => 'PharmacyName changed successfully!']);
+    }
+
+    public function changePhLocation()
+    {
+        $user = AuthMiddleWare::getUser();
+
+        $user->update(['PharmacyLocation' => request('PharmacyLocation')]);
+
+        return response()->json(['message' => 'PharmacyLocation changed successfully!']);
     }
 }

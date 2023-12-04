@@ -13,6 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'http://127.0.0.1:8000/*',
-        'http://8927-5-155-4-181.ngrok-free.app/*',
+        'http://0473-188-133-46-229.ngrok-free.app/*',
     ];
 }
