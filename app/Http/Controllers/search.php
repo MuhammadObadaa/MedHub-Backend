@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\MedicineResource;
+use App\Http\Resources\MedicineCollection;
 use Illuminate\Http\Request;
 use App\Models\Medicine;
-use App\Models\Category;
 
 class search extends Controller
 {
@@ -15,13 +14,13 @@ class search extends Controller
         $by = request('by');
 
         if (request()->hasHeader('lang') && request()->header('lang') == 'ar')
-            $medicine = Medicine::where('ar_' . $by, $searched_text)->OrderBy('popularity', 'DESC')->get();
-        else
-            $medicine = Medicine::where($by, $searched_text)->OrderBy('popularity', 'DESC')->get();
+            $by = 'ar_' . $by;
+
+        $medicine = Medicine::where($by, $searched_text)->OrderBy('popularity', 'DESC')->get();
 
         $message = ['message' => 'medicines listed successfully!'];
 
-        return MedicineResource::collection($medicine)->additional($message);
+        return (new MedicineCollection($medicine))->additional($message)->response()->setStatusCode(200);
     }
 
     public function searchInCategory($category)
@@ -29,15 +28,15 @@ class search extends Controller
         $searched_text = request('searched_text');
         $by = request('by');
 
+        if (request()->hasHeader('lang') && request()->header('lang') == 'ar')
+            $by = 'ar_' . $by;
+
         $medicine = Medicine::where('category_id', $category);
 
-        if (request()->hasHeader('lang') && request()->header('lang') == 'ar')
-            $medicine = Medicine::where('ar_' . $by, $searched_text)->OrderBy('popularity', 'DESC')->get();
-        else
-            $medicine = Medicine::where($by, $searched_text)->OrderBy('popularity', 'DESC')->get();
+        $medicine = $medicine->where($by, $searched_text)->OrderBy('popularity', 'DESC')->get();
 
         $message = ['message' => 'medicines listed successfully!'];
 
-        return MedicineResource::collection($medicine)->additional($message);
+        return (new MedicineCollection($medicine))->additional($message)->response()->setStatusCode(200);
     }
 }

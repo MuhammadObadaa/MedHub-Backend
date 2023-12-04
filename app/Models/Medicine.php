@@ -54,7 +54,7 @@ class Medicine extends Model
     }
 
     public function getImageURL(){
-        if($this->image != null){
+        if($this->image != "" && $this->image != null){
             //first arg is the path of the file relative to the public directory
             return url('storage',$this->image);
         }

@@ -2,25 +2,50 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MedicineController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\search;
-use App\Models\Medicine;
 use Illuminate\Support\Facades\Route;
 
 
-Route::group(['prefix' => '/medicines/', 'as' => 'medicines.', 'middleware' => 'user'], function () {
-    Route::post('', [MedicineController::class, 'store'])->name('store');
+//first: prefix goes before every route, for example in route number 2, the route will be like this
+//api/medicines/{medicine}
+
+//second: whenever we mention a variable between curly braces like this, {medicine} we mean the id of the medicine, for example:
+//api/medicines/1
+
+//third: all the following routes will return a message additionally to what they must returns
+
+//fourth: all the returned json fils are formatted according to the standard shapes (resources)
+
+Route::group(['prefix' => '/medicines/', 'as' => 'medicines.'], function () {
+    //1-returns a json file containing the medicines according to popularity, formatted according to the resource
     Route::get('', [MedicineController::class, 'list'])->name('list');
-    Route::delete('medicine', [MedicineController::class, 'destroy'])->name('destroy');
+    //2-receives the id, returns a json file with medicine info
+    Route::get('/top10', [MedicineController::class, 'top10'])->name('top10');
+    //4-returns a json file with 10 recently added medicines according to latency
+    Route::get('recent10', [MedicineController::class, 'recent10'])->name('recent10');
+    //5- returns a json file with favorite medicines of the user
+    Route::get('/user/favorites', [MedicineController::class, 'favorites'])->name('user.favorites');
+    //6-receives a json file with all medicine attributes, image is not manditory.
+    Route::post('', [MedicineController::class, 'store'])->name('store');
+    //7-receives the id of the medicine in the url, delete the medicine from the database
     Route::get('{medicine}', [MedicineController::class, 'show'])->name('show');
+    //3-returns a json file with top 10 medicines according to popularity
+    Route::delete('{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
+    //8-receive a json file, with updated medicine attributes, and the id in the url, updates the medicine
+    Route::put('{medicine}', [MedicineController::class, 'update'])->name('update');
 });
 
 
-Route::group(['prefix' => '/categories/', 'as' => 'categories.', 'middleware' => 'user'], function () {
+Route::group(['prefix' => '/categories/', 'as' => 'categories.'], function () {
+    //1- returns a json file with all categories and without any medicines
+    Route::get('', [CategoryController::class, 'list'])->name('list');
+    //2-receives a json file with info of the category, store it in the database
     Route::post('', [CategoryController::class, 'store'])->name('store');
-    Route::get('', [CategoryController::class, 'homePage'])->name('list');
+    //3-returns a json file with all medicines under the category
     Route::get('{category}', [CategoryController::class, 'show'])->name('show');
+    //4-receives the id of the category, delete it
     Route::delete('{category}', [CategoryController::class, 'destroy'])->name('destroy');
+    //receives the id of the category and a json file with updated info, updates the category
+    Route::put('{category}', [CategoryController::class, 'update'])->name('update');
     //NOTE: when the category arg was out of the bounds it won't return an exception from mysql .. it's just return 404 error
+
 });

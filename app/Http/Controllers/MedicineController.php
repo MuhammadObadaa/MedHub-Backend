@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\MedicineResource;
+use App\Http\Resources\MedicineCollection;
 use App\Models\Category;
 use App\Models\Medicine;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class MedicineController extends Controller
@@ -16,7 +20,6 @@ class MedicineController extends Controller
     //front-end developer must send the category_id for every medicine created
     public function store()
     {
-        //TODO: make some columns unique in the database, and validate them
         $imageFile = '';
         if (request()->has('image')) {
             $validatedImage = Validator::make(request()->get('image'), [
@@ -35,11 +38,11 @@ class MedicineController extends Controller
             'category_id' => request()->get('category_id'), //the id is sent for every medicine
             //'category_id' => Category::where('name',request()->get('categoryName'))->orWhere('ar-name',request()->get('name'))->first()->id
             'name' => request()->get('name'),
-            'ar-name' => request()->get('ar-name'),
-            'scientificName' => request()->get('name'),
-            'ar-scientificName' => request()->get('name'),
-            'description' => request()->get('name'),
-            'ar-description' => request()->get('name'),
+            'ar_name' => request()->get('ar_name'),
+            'scientificName' => request()->get('scientificName'),
+            'ar_scientificName' => request()->get('ar_scientificName'),
+            'description' => request()->get('description'),
+            'ar_description' => request()->get('ar_description'),
             'brand' => request()->get('brand'),
             'quantity' => request()->get('quantity'),
             'expirationDate' => request()->get('expirationDate'),
@@ -60,23 +63,106 @@ class MedicineController extends Controller
 
         $message = [
             'message' => 'medicines listed successfully!',
-            'status' => 200
         ];
-        return MedicineResource::collection($medicines)->additional($message);
+
+        return (new MedicineCollection($medicines))->additional($message)->response()->setStatusCode(200);
+        //return MedicineCollection::make($medicines)->additional($message)->response()->setStatusCode(200);
+        //return MedicineResource::collection($medicines)->additional($message)->response()->setStatusCode(200); this won't change collection name
     }
 
     //show is used by the pharmacist to see the details of a certain medicine
     public function show(Medicine $medicine)
     {
         $message = [
-            'message' => 'medicine displayed successfully!',
-            'status' => 200
+            'message' => 'medicine displayed successfully!'
         ];
-        return (new MedicineResource($medicine))->additional($message);
+        return (new MedicineResource($medicine))->additional($message)->response()->setStatusCode(200);
     }
 
-    public function destroy(Medicine $medicine){
+    public function destroy(Medicine $medicine)
+    {
         $medicine->delete();
+        return response()->json([
+            'message' => 'medicine deleted successfully!'
+        ], 200);
     }
 
+
+    //updating the medicine is a tricky function, and it's related to the shape of the page on the front-end
+    //if the front-end displayed a page with text-areas for all fields to update, and in the text-areas, the primary text for them
+    //must be the same as the original information, then the shape of the update function must be as so
+    //however if the front-end allowed customized editing, and that is, for every attribute of the medicine,
+    //the storeMan can update one of them specifically, the update function will differ, and it must be coded with if statements
+    public function update(Medicine $medicine)
+    {
+        $updated = [
+            'category_id' => request()->get('category_id'), //the id is sent for every medicine
+            //'category_id' => Category::where('name',request()->get('categoryName'))->orWhere('ar-name',request()->get('name'))->first()->id
+            'name' => request()->get('name'),
+            'ar_name' => request()->get('ar_name'),
+            'scientificName' => request()->get('scientificName'),
+            'ar_scientificName' => request()->get('ar_scientificName'),
+            'description' => request()->get('description'),
+            'ar_description' => request()->get('ar_description'),
+            'brand' => request()->get('brand'),
+            'quantity' => request()->get('quantity'),
+            'expirationDate' => request()->get('expirationDate'),
+            'price' => request()->get('price'),
+        ];
+
+        if (request()->has('image')) {
+            $validatedImage = Validator::make(request()->get('image'), [
+                'image' => 'image'
+            ]);
+            if ($validatedImage->fails()) {
+                return response()->json([
+                    'message' => 'Invalid image file'
+                ]);
+            } else {
+                if ($medicine->image != null) {
+                    Storage::disk('public')->delete($medicine->image);
+                }
+                $imageFile = request()->file('image')->store('app', 'public');
+                $updated['image'] = $imageFile;
+            }
+        }
+
+        $medicine->update($updated);
+        return response()->json([
+            'message' => 'medicine updated successfully!',
+        ], 200);
+    }
+
+
+    //returns top 10 medicines
+    public function top10()
+    {
+        $medicines = Medicine::OrderBy('popularity', 'DESC')->take(10)->get();
+        $message = [
+            'message' => 'top 10 medicines displayed successfully!'
+        ];
+        return (new MedicineCollection($medicines))->additional($message)->response()->setStatusCode(200);
+    }
+
+    //returns recent 10 medicines
+    public function recent10()
+    {
+        $medicines = Medicine::latest()->take(10)->get();
+        $message = [
+            'message' => 'recent 10 medicines displayed successfully!'
+        ];
+        return MedicineResource::collection($medicines)->additional($message)->response()->setStatusCode(200);
+    }
+
+    public function favorites()
+    {
+        //TODO: haven't been tested with postman
+
+        $medicines = auth()->user()->favors->get();
+        $message = [
+            'message' => 'recent 10 medicines displayed successfully!'
+        ];
+
+        return MedicineResource::collection($medicines)->additional($message)->response()->setStatusCode(200);
+    }
 }

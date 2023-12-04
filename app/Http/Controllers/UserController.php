@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 use App\Models\Cart;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Exception;
 
 class UserController extends Controller
@@ -33,9 +34,12 @@ class UserController extends Controller
     }
 
     //TODO: a new raw will be add to database when you favor a medicine even if it was already in the table
-    public function favor($medicine)
+    public function favor(Medicine $medicine)
     {
         $user = AuthMiddleware::getUser();
+
+        if ($user->hasFavored($medicine))
+            return response()->json(['message' => 'Already in the favorite list!'], 400);
 
         try {
             // you can send medicine->id and the medicine object itself
@@ -44,11 +48,13 @@ class UserController extends Controller
             return response()->json(['message' => 'Something went wrong!'], 400);
         }
 
+        $medicine->priority += 1;
+
         return response()->json(['message' => 'medicine added to favorites successfully']);
     }
 
     //TODO: return a sign for already unfavored medicine when unfavored it
-    public function unFavor($medicineId)
+    public function unFavor(Medicine $medicineId)
     {
         $user = AuthMiddleware::getUser();
 
@@ -70,10 +76,14 @@ class UserController extends Controller
 
         $cart = Cart::create(['user_id' => $user->id, 'bill' => '0', 'status' => 'preparing']); // other -> 'sent' and 'received'
 
-        foreach ($cartContents as $medicine) {
-            $cart->medicines()->attach($medicine['id'], ['quantity' => $medicine['quantity']]);
-            $medicinePrice = Medicine::where('id', $medicine['id'])->first()->price;
-            $bill += $medicine['quantity'] * $medicinePrice;
+        //TODO: decrease the amount of each ordered medicine
+        foreach ($cartContents as $order) {
+            $cart->medicines()->attach($order['id'], ['quantity' => $order['quantity']]);
+            //TODO: is it better to get medicine price from Medicine method or keep it as this?
+            //if it works don't touch it :)
+            $medicine = Medicine::where('id', $order['id'])->first();
+            $bill += $order['quantity'] * $medicine->price;
+            $medicine->priority += 2 * $order['quantity'];
         }
 
         $cart->update(['bill' => $bill]);
@@ -84,6 +94,8 @@ class UserController extends Controller
     public function changeImage()
     {
         $user = AuthMiddleware::getUser();
+        // if($user->image != null)
+        //     Storage::disk('public')->delete($user->image);
 
         $validatedImage = Validator::make(request()->get('image'), ['image' => 'image']);
 

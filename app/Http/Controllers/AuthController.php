@@ -24,7 +24,20 @@ class AuthController extends Controller
         $this->middleware('user', ['only' => []]);
     }
     */
-    public function create()
+
+    private function getUser(): User
+    {
+        //TODO: make it single function across UserController and AuthController
+        //TODO: improve the way methods are re_getting the user after it was gotten in the middleware
+        $user = User::where('remember_token', request('token'))->first();
+        if (!$user)
+            $user = User::where('remember_token', request()->cookie('token'))->first();
+
+        //there is no need to check if the $user is null due to middleware check
+
+        return $user;
+    }
+    public function store()
     {
         $imageFile = '';
 

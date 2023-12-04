@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+//use Illuminate\Support\Facades\Auth; for auth
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthMiddleware
@@ -18,8 +18,7 @@ class AuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        //echo "authenticated";
-        // add this method dump(Auth::user());
+        // add this method Auth::user();
         $user = User::where('remember_token', request()->header('token'))->first();
         if (!$user)
             $user = User::where('remember_token', request()->cookie('token'))->first();
