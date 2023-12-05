@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\MedicineResource;
 use App\Http\Resources\MedicineCollection;
+use App\Http\Middleware\AuthMiddleware;
 use App\Models\Category;
 use App\Models\Medicine;
 use App\Models\User;
@@ -147,7 +148,7 @@ class MedicineController extends Controller
     //returns recent 10 medicines
     public function recent10()
     {
-        $medicines = Medicine::latest()->take(10)->get();
+        $medicines = Medicine::latest()->take(10)->get(); //TODO: orderby 'created_at' because it returns unexpected result
         $message = [
             'message' => 'recent 10 medicines displayed successfully!'
         ];
@@ -156,11 +157,9 @@ class MedicineController extends Controller
 
     public function favorites()
     {
-        //TODO: haven't been tested with postman
-
-        $medicines = auth()->user()->favors->get();
+        $medicines = AuthMiddleware::getUser()->favors()->get();
         $message = [
-            'message' => 'recent 10 medicines displayed successfully!'
+            'message' => 'favored medicines displayed successfully!'
         ];
 
         return MedicineResource::collection($medicines)->additional($message)->response()->setStatusCode(200);

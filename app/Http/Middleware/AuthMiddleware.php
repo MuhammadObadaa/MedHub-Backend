@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Cookie;
 //use Illuminate\Support\Facades\Auth; for auth
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,7 +20,15 @@ class AuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // add this method Auth::user();
+        // dump(Cookie::get('token'));
+        // dump(request()->cookie('token'));
+        // dump(Crypt::decrypt(request()->cookie('token'), false));
+        /*
+        both Cookie::get() and request()->cookie() return decrypted data when dump it outside login function
+        but otherwise they return encrypted data like middleware or userController
+        excepting 'token' cookie from encrypting as an unStandard solution.
+        */
+
         $user = User::where('remember_token', request()->header('token'))->first();
         if (!$user)
             $user = User::where('remember_token', request()->cookie('token'))->first();

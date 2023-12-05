@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Http\Middleware\AuthMiddleware;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\Request;
 
 //search about laravel/ui and Sanctum package
@@ -41,13 +43,13 @@ class AuthController extends Controller
     {
         $imageFile = '';
 
-        $imageFile = '';
-
-        $validatedImage = Validator::make(request()->get('image'), ['image' => 'image']);
-        if ($validatedImage->fails())
-            return response()->json(['message' => 'Invalid image file']);
-        else
-            $imageFile = request()->file('image')->store('app', 'public');
+        if (request()->has('image')) {
+            $validatedImage = Validator::make(request()->get('image'), ['image' => 'image']);
+            if ($validatedImage->fails())
+                return response()->json(['message' => 'Invalid image file']);
+            else
+                $imageFile = request()->file('image')->store('app', 'public');
+        }
 
         if (User::where('phoneNumber', request('phoneNumber'))->first())
             return response()->json(['message' => 'This phoneNumber already exist'], 400);
@@ -75,14 +77,16 @@ class AuthController extends Controller
 
         //TODO: make rememberMe optional
         //TODO: No need to send the rememberMe option to the login. where we already create our own token in the cookie
-        Auth::login($user, TRUE);
+        Auth::login($user);
         //Auth::attempt()
 
-        //for web application
-        $cookie = cookie('token', $user->remember_token, 10);
+        // if (request()->hasCookie('token')) {
+        //     dump(Cookie::get('token'));
+        //     dump(request()->cookie('token'));
+        // }
 
         return response()->json(['message' => 'Logged in successfully', 'token' => $user->remember_token])
-            ->withCookie($cookie);
+            ->withCookie(Cookie()->forever('token', $user->remember_token));
     }
 
     public function logout()
@@ -93,10 +97,13 @@ class AuthController extends Controller
         Auth::setUser($user);
         Auth::logout();
 
-        cookie()->forget('token');
+        Cookie::queue(Cookie::forget('token'));
 
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
+        try {
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+        } catch (Exception $e) {
+        }
 
         return response()->json(['message' => 'Logged out successfully']);
     }

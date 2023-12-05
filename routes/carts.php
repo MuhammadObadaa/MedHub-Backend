@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\CartController;
+use App\Http\Controllers\CartController as cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,22 +15,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['prefix' => '/carts/','as' => 'carts.'],function(){
+Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () {
     //1-returns json file with all orders in preparation
-    Route::get('prep',[CartController::class,'inPreparation'])->name('list.prep');
+    Route::get('prep', [cart::class, 'inPreparation'])->name('list.prep');
     //2-returns a json file with all getting delivered orders
-    Route::get('getdel',[CartController::class,'gettingDelivered'])->name('list.getdel');
+    Route::get('getDel', [cart::class, 'gettingDelivered'])->name('list.getDel');
     //3-returns a json file with all delivered orders
-    Route::get('del',[CartController::class,'delivered'])->name('list.del');
+    Route::get('del', [cart::class, 'delivered'])->name('list.del');
     //4-returns all orders of all users
-    Route::get('',[CartController::class,'all'])->name('list.all');
-    //5-returns a josn file with the all carts info of the logged in user
-    Route::get('user/auth',[CartController::class,'authList'])->name('auth');
+    Route::get('', [cart::class, 'all'])->name('list.all');
+    //5-returns a json file with the all carts info of the logged in user
+    Route::get('user/auth', [cart::class, 'authList'])->name('auth');
     //6-returns cart list for a specific user
-    Route::get('user/{user}',[CartController::class,'userList'])->name('user');
-    //7-returns a json filw with all info of a specific cart including medicines
-    Route::get('{cart}',[CartController::class,'show'])->name('show');
+    Route::get('user/{user}', [cart::class, 'userList'])->name('user');
+    //7-returns a json flow with all info of a specific cart including medicines
+    Route::get('{cart}', [cart::class, 'show'])->name('show');
     //8-updates the status of the orders, receives a json file, and returns a message
-    Route::put('{cart}',[CartController::class,'update'])->name('updaet');
-
+    Route::put('{cart}', [cart::class, 'update'])->name('update');
 });

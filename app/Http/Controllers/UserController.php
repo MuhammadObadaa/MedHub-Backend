@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Medicine;
 use App\http\Middleware\AuthMiddleware;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\File;
 use App\Models\Cart;
 use App\Models\User;
@@ -18,19 +19,11 @@ class UserController extends Controller
     public function show()
     {
         $user = AuthMiddleware::getUser()->select('name', 'pharmacyName', 'pharmacyLocation', 'phoneNumber', 'image')->first();
-        return response()->json(['user' => $user]);
-    }
-
-    public function changePassword()
-    {
-
-        $user = AuthMiddleware::getUser();
-
-        if (!Hash::check(request('oldPassword'), $user->password))
-            return response()->json(['message' => 'Wrong Password!'], 400);
-
-        $user->update(['password' => Hash::make(request('newPassword'))]);
-        return response()->json(['message' => 'Password changed successfully']);
+        return response()->json([
+            'user' => $user,
+            // 'request' => request()->cookie('token'),
+            // 'get' => Cookie::get('token')
+        ]);
     }
 
     //TODO: a new raw will be add to database when you favor a medicine even if it was already in the table
@@ -43,26 +36,30 @@ class UserController extends Controller
 
         try {
             // you can send medicine->id and the medicine object itself
-            $user->favors()->attach($medicine);
+            $user->favors()->attach($medicine->id);
         } catch (Exception $e) {
             return response()->json(['message' => 'Something went wrong!'], 400);
         }
 
-        $medicine->priority += 1;
+        $medicine->update(['popularity' =>  $medicine->popularity + 1]);
 
         return response()->json(['message' => 'medicine added to favorites successfully']);
     }
 
-    //TODO: return a sign for already unfavored medicine when unfavored it
-    public function unFavor(Medicine $medicineId)
+    public function unFavor(Medicine $medicine)
     {
         $user = AuthMiddleware::getUser();
 
+        if (!$user->hasFavored($medicine))
+            return response()->json(['message' => 'This medicine is not favored'], 400);
+
         try {
-            $user->favors()->detach($medicineId);
+            $user->favors()->detach($medicine);
         } catch (Exception $e) {
             return response()->json(['message' => 'Something went wrong!'], 400);
         }
+
+        $medicine->update(['popularity' =>  $medicine->popularity - 1]);
 
         return response()->json(['message' => 'medicine removed from favorites successfully']);
     }
@@ -83,7 +80,7 @@ class UserController extends Controller
             //if it works don't touch it :)
             $medicine = Medicine::where('id', $order['id'])->first();
             $bill += $order['quantity'] * $medicine->price;
-            $medicine->priority += 2 * $order['quantity'];
+            $medicine->update(['popularity' =>  $medicine->popularity + 2 * $order['quantity']]);
         }
 
         $cart->update(['bill' => $bill]);
@@ -91,50 +88,37 @@ class UserController extends Controller
         return response()->json(['message' => 'Cart added successfully!']);
     }
 
-    public function changeImage()
-    {
-        $user = AuthMiddleware::getUser();
-        // if($user->image != null)
-        //     Storage::disk('public')->delete($user->image);
-
-        $validatedImage = Validator::make(request()->get('image'), ['image' => 'image']);
-
-        if ($validatedImage->fails())
-            return response()->json(['message' => 'Invalid image file']);
-
-        $imageFile = request()->file('image')->store('app', 'public');
-        if (File::exists($user->image))
-            File::delete($user->image);
-
-        $user->update(['image' => $imageFile]);
-
-        return response()->json(['message' => 'Image changed successfully!']);
-    }
-
-    public function changeName()
+    //TODO: specify this method as needed. at least some of them
+    public function update()
     {
         $user = AuthMiddleWare::getUser();
 
-        $user->update(['name' => request('name')]);
+        if (request()->has('name'))
+            $user->update(['name' => request('name')]);
+        if (request()->has('pharmacyName'))
+            $user->update(['pharmacyName' => request('pharmacyName')]);
+        if (request()->has('pharmacyLocation'))
+            $user->update(['pharmacyLocation' => request('pharmacyLocation')]);
+        if (request()->has('newPassword')) {
+            if (!Hash::check(request('oldPassword'), $user->password))
+                return response()->json(['message' => 'Wrong Password!'], 400);
+            $user->update(['password', Hash::make('newPassword')]);
+        }
+        if (request()->has('image')) {
+            $validatedImage = Validator::make(request()->get('image'), ['image' => 'image']);
 
-        return response()->json(['message' => 'name changed successfully!']);
-    }
+            if ($validatedImage->fails())
+                return response()->json(['message' => 'Invalid image file'], 400);
 
-    public function changePhName()
-    {
-        $user = AuthMiddleWare::getUser();
+            $imageFile = request()->file('image')->store('app', 'public');
+            if (File::exists($user->image))
+                File::delete($user->image);
+            // if($user->image != null)
+            //     Storage::disk('public')->delete($user->image);
 
-        $user->update(['PharmacyName' => request('PharmacyName')]);
+            $user->update(['image' => $imageFile]);
+        }
 
-        return response()->json(['message' => 'PharmacyName changed successfully!']);
-    }
-
-    public function changePhLocation()
-    {
-        $user = AuthMiddleWare::getUser();
-
-        $user->update(['PharmacyLocation' => request('PharmacyLocation')]);
-
-        return response()->json(['message' => 'PharmacyLocation changed successfully!']);
+        return response()->json(['message' => 'Changes applied successfully!']);
     }
 }

@@ -36,6 +36,7 @@ class MedicineResource extends JsonResource
 
         return [
             'id' => $this->id,
+            //TODO: don't send isFavorite when it's favorite list
             'isFavorite' => AuthMiddleware::getUser()->hasFavored(Medicine::where('id', $this->id)->first()),
             //'category' => $this->when(!Route::is('categories.list') && !Route::is('categories.show'),$this->when($request->header('lang')=='ar',$this->category()->select('id','ar_name')->get(),$this->category()->select('id','name')->get())),
             // TODO: fix ar_name in category
@@ -46,8 +47,8 @@ class MedicineResource extends JsonResource
             'description' => $this->when($arabicLang, $this->ar_description, $this->description),
             'brand' => $this->brand,
             'quantity' => $this->quantity,
-            //short if statement is necassery 'causes even if the route is not carts.* it checks the true arg
-            'ordered_quantity' => $this->when(Route::is('carts.*'),$this->pivot?$this->pivot->quantity:null),
+            //short if statement is necessary 'causes even if the route is not carts.* it checks the true arg
+            'ordered_quantity' => $this->when(Route::is('carts.*'), $this->pivot ? $this->pivot->quantity : null),
             'expirationDate' => $this->expirationDate,
             'price' => $this->price,
             //'likes' => $this->favored()->count(),
