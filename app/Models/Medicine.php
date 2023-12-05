@@ -37,28 +37,32 @@ class Medicine extends Model
     // ];
 
     //return the category of the medicine
-    public function category(){
-        return $this->belongsTo(Category::class,'category_id','id');
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
     }
     //returns the user that has added the medicine to the favorites
-    public function favored(){
-        return $this->belongsToMany(User::class,'medicine_user','medicine_id','user_id')->withTimestamps();
+    public function favored()
+    {
+        return $this->belongsToMany(User::class, 'medicine_user', 'medicine_id', 'user_id')->withTimestamps();
     }
     //return the carts of the user that the medicine belongs to
-    public function carts(){
-        return $this->belongsToMany(Cart::class,'cart_medicine','medicine_id','cart_id')->withTimestamps();
+    public function carts()
+    {
+        return $this->belongsToMany(Cart::class, 'cart_medicine', 'medicine_id', 'cart_id')->withPivot('quantity')->withTimestamps();
     }
 
-    public function isFavored(){
-        return $this->favored()->where('user_id',auth()->id())->exists();
+    public function isFavored()
+    {
+        return $this->favored()->where('user_id', auth()->id())->exists();
     }
 
-    public function getImageURL(){
-        if($this->image != "" && $this->image != null){
+    public function getImageURL()
+    {
+        if ($this->image != "" && $this->image != null) {
             //first arg is the path of the file relative to the public directory
-            return url('storage',$this->image);
+            return url('storage', $this->image);
         }
         return '';
     }
-
 }

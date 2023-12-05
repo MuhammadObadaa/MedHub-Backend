@@ -24,9 +24,9 @@ class AuthMiddleware
         // dump(request()->cookie('token'));
         // dump(Crypt::decrypt(request()->cookie('token'), false));
         /*
-        both Cookie::get() and request()->cookie() return decrypted data when dump it outside login function
-        but otherwise they return encrypted data like middleware or userController
-        excepting 'token' cookie from encrypting as an unStandard solution.
+            both Cookie::get() and request()->cookie() return decrypted data when dump it outside login function
+            but otherwise they return encrypted data like middleware or userController
+            excepting 'token' cookie from encrypting as an unStandard solution.
         */
 
         $user = User::where('remember_token', request()->header('token'))->first();

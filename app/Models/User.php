@@ -63,6 +63,11 @@ class User extends Authenticatable
         return $this->favors()->where('medicine_id', $medicine->id)->exists();
     }
 
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
+
     public function getImageURL()
     {
         if ($this->image != "" && $this->image != null) {

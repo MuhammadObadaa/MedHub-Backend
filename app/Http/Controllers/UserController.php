@@ -64,30 +64,6 @@ class UserController extends Controller
         return response()->json(['message' => 'medicine removed from favorites successfully']);
     }
 
-    public function addCart()
-    {
-        $user = AuthMiddleware::getUser();
-        $bill = 0;
-
-        $cartContents = request('cart');
-
-        $cart = Cart::create(['user_id' => $user->id, 'bill' => '0', 'status' => 'preparing']); // other -> 'sent' and 'received'
-
-        //TODO: decrease the amount of each ordered medicine
-        foreach ($cartContents as $order) {
-            $cart->medicines()->attach($order['id'], ['quantity' => $order['quantity']]);
-            //TODO: is it better to get medicine price from Medicine method or keep it as this?
-            //if it works don't touch it :)
-            $medicine = Medicine::where('id', $order['id'])->first();
-            $bill += $order['quantity'] * $medicine->price;
-            $medicine->update(['popularity' =>  $medicine->popularity + 2 * $order['quantity']]);
-        }
-
-        $cart->update(['bill' => $bill]);
-
-        return response()->json(['message' => 'Cart added successfully!']);
-    }
-
     //TODO: specify this method as needed. at least some of them
     public function update()
     {

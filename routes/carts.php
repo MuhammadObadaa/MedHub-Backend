@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () {
+Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () { //need to test
     //1-returns json file with all orders in preparation
     Route::get('prep', [cart::class, 'inPreparation'])->name('list.prep');
     //2-returns a json file with all getting delivered orders
@@ -24,12 +24,12 @@ Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () {
     Route::get('del', [cart::class, 'delivered'])->name('list.del');
     //4-returns all orders of all users
     Route::get('', [cart::class, 'all'])->name('list.all');
+    //6-
+    Route::post('', [cart::class, 'store'])->name('store');
     //5-returns a json file with the all carts info of the logged in user
     Route::get('user/auth', [cart::class, 'authList'])->name('auth');
     //6-returns cart list for a specific user
     Route::get('user/{user}', [cart::class, 'userList'])->name('user');
     //7-returns a json flow with all info of a specific cart including medicines
     Route::get('{cart}', [cart::class, 'show'])->name('show');
-    //8-updates the status of the orders, receives a json file, and returns a message
-    Route::put('{cart}', [cart::class, 'update'])->name('update');
 });

@@ -77,8 +77,8 @@ class AuthController extends Controller
 
         //TODO: make rememberMe optional
         //TODO: No need to send the rememberMe option to the login. where we already create our own token in the cookie
-        Auth::login($user);
-        //Auth::attempt()
+        Auth::login($user, TRUE); // without true .. there is no remember_me value which is the token for our system
+        //Auth::attempt()   
 
         // if (request()->hasCookie('token')) {
         //     dump(Cookie::get('token'));
