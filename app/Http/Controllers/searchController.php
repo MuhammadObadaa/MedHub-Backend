@@ -6,7 +6,7 @@ use App\Http\Resources\MedicineCollection;
 use Illuminate\Http\Request;
 use App\Models\Medicine;
 
-class search extends Controller
+class searchController extends Controller
 {
     public function search()
     {

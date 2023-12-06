@@ -22,7 +22,7 @@ class CartController extends Controller
         $user = AuthMiddleware::getUser();
         $bill = 0;
 
-        $cartContents = request('cart');
+        $cartContents = request('data');
 
         $cart = Cart::create(['user_id' => $user->id, 'bill' => '0', 'status' => 'preparing']); // other -> 'sent' and 'received'
 

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\CategoryController as category;
 use App\Http\Controllers\MedicineController as medicine;
-use App\Http\Controllers\search;
+use App\Http\Controllers\searchController as search;
 use Illuminate\Support\Facades\Route;
 
 
