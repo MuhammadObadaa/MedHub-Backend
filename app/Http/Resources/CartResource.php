@@ -15,12 +15,12 @@ class CartResource extends JsonResource
      * @return array<string, mixed>
      */
 
-     public static $wrap = 'carts';
+    public static $wrap = 'data';
 
-     public static function getWrap()
-     {
+    public static function getWrap()
+    {
         return CartResource::$wrap;
-     }
+    }
 
     public function toArray(Request $request): array
     {

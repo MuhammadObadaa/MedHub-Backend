@@ -13,7 +13,7 @@ class CategoryResource extends JsonResource
      * @return array<string, mixed>
      */
 
-    public static $wrap = 'categories';
+    public static $wrap = 'data';
 
     public static function getWrap(): string
     {

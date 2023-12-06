@@ -62,7 +62,14 @@ class CartController extends Controller
     {
         $carts = Cart::where('status', 'in preparation')->oldest()->get();
         $message = ['message' => 'in preparation orders displayed successfully!'];
-        return (new CartCollection($carts))->additional($message)->response()->setStatusCode(200);
+        return (new CartCollection($carts))->additional($message);
+    }
+
+    public function refused()
+    {
+        $carts = Cart::where('status', 'refused')->oldest()->get();
+        $message = ['message' => 'refused orders displayed successfully!'];
+        return (new CartCollection($carts))->additional($message);
     }
     public function gettingDelivered()
     {
@@ -80,7 +87,7 @@ class CartController extends Controller
     //used by the user to display his own carts
     public function authList()
     {
-        $carts = AuthMiddleware::getUser()->carts->get();
+        $carts = AuthMiddleware::getUser()->carts()->get();
         $message = ['message' => 'your orders displayed successfully!'];
         return (new CartCollection($carts))->additional($message)->response()->setStatusCode(200);
     }
@@ -194,7 +201,7 @@ class CartController extends Controller
             if ($cart->payed == false) {
                 return response()->json([
                     'message' => 'cannot deliver the order without payment!'
-                ],402 /* payment required */);
+                ], 402 /* payment required */);
             }
 
         $messages[$i++] = "'status of order updated successfully!'";

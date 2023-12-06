@@ -17,7 +17,7 @@ class MedicineResource extends JsonResource
      *
      * @var string|null
      */
-    public static $wrap = 'medicines';
+    public static $wrap = 'data';
 
     public static function getWrap(): string
     {
