@@ -37,7 +37,8 @@ class MedicineResource extends JsonResource
         return [
             'id' => $this->id,
             //TODO: don't send isFavorite when it's favorite list
-            'isFavorite' => $this->when(!Route::is('user.favorites'),AuthMiddleware::getUser()->hasFavored(Medicine::where('id', $this->id)->first())),
+            //'isFavorite' => $this->when(!Route::is('user.favorites'),AuthMiddleware::getUser()->hasFavored(Medicine::where('id', $this->id)->first())),
+            'isFavorite' => AuthMiddleware::getUser()->hasFavored(Medicine::where('id', $this->id)->first()),
             'category' => $this->when(!Route::is('categories.list'), new CategoryResource($this->category()->first())),
             'name' => $this->when($arabicLang, $this->ar_name, $this->name),
             'scientificName' => $this->when($arabicLang, $this->ar_scientificName, $this->scientificName),
