@@ -1,4 +1,4 @@
-Write-Host "Welcome to MedHub DataBase insertion automation v1.0.0"  -ForegroundColor DarkYellow
+Write-Host "Welcome to MedHub DataBase insertion automation v1.0.2"  -ForegroundColor DarkYellow
 $choice = 0
 $imageInputMessage = "input medicine image (just its name and extension like 'image.png' _make sure it's in /app directory in laravel project_ or just leave it empty)"
 while ($choice -eq 0) {
