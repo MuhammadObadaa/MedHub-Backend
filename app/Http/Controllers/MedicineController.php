@@ -24,7 +24,7 @@ class MedicineController extends Controller
         //TODO: make image required
         $imageFile = '';
         if (request()->has('image')) {
-            $validatedImage = Validator::make(request()->get('image'), [
+            $validatedImage = Validator::make(request()->all(), [
                 'image' => 'image'
             ]);
             if ($validatedImage->fails()) {
@@ -105,7 +105,7 @@ class MedicineController extends Controller
         ];
 
         if (request()->has('image')) {
-            $validatedImage = Validator::make(request()->get('image'), [
+            $validatedImage = Validator::make(request()->all(), [
                 'image' => 'image'
             ]);
             if ($validatedImage->fails()) {

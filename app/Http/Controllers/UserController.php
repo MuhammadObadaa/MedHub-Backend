@@ -67,7 +67,7 @@ class UserController extends Controller
             $user->update(['password', Hash::make('newPassword')]);
         }
         if (request()->has('image')) {
-            $validatedImage = Validator::make(request()->get('image'), ['image' => 'image']);
+            $validatedImage = Validator::make(request()->all(), ['image' => 'image']);
 
             if ($validatedImage->fails())
                 return response()->json(['message' => 'Invalid image file'], 400);
