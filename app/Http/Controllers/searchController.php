@@ -21,10 +21,9 @@ class searchController extends Controller
 
         $message = ['message' => 'medicines listed successfully!'];
 
-        return (new MedicineCollection($medicine))->additional($message)->response()->setStatusCode(200);
+        return (new MedicineCollection($medicine))->additional($message);
     }
-
-    public function searchInCategory($categoryId)
+    public function searchInCategory($category)
     {
         $searched_text = request('searched_text');
         $by = request('by');
@@ -32,12 +31,12 @@ class searchController extends Controller
         if (request()->hasHeader('lang') && request()->header('lang') == 'ar')
             $by = 'ar_' . $by;
 
-        $medicine = Medicine::where('category_id', $categoryId);
+        $medicine = Medicine::where('category_id', $category);
 
         $medicine = $medicine->where($by, 'like', '%' . $searched_text . '%')->OrderBy('popularity', 'DESC')->get();
 
         $message = ['message' => 'medicines listed successfully!'];
 
-        return (new MedicineCollection($medicine))->additional($message)->response()->setStatusCode(200);
+        return (new MedicineCollection($medicine))->additional($message);
     }
 }

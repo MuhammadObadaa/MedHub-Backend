@@ -15,6 +15,7 @@ class Cart extends Model
         'status'
     ];
 
+    // eagre loading
     // //this tells the model, whenever u fetch the info of a cart, get all the medicines
     // //that was in it.
     // protected $with = [

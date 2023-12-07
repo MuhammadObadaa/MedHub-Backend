@@ -17,6 +17,7 @@ Route::group(['prefix' => '/medicines/', 'as' => 'medicines.'], function () { //
 
 
 Route::group(['prefix' => '/categories/', 'as' => 'categories.'], function () { // need to be tested
+    Route::post('', [cart::class, 'store'])->name('store');
     //1-receives the id of the category, delete it
     Route::delete('{category}', [category::class, 'destroy'])->name('destroy');
     //2-receives the id of the category and a json file with updated info, updates the category
@@ -26,7 +27,18 @@ Route::group(['prefix' => '/categories/', 'as' => 'categories.'], function () { 
 //8-returns cart list for a specific user
 
 Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () { //tested
+    //1-returns json file with all orders in preparation
+    Route::get('prep', [cart::class, 'inPreparation'])->name('list.prep');
+    //2-returns a json file with all getting delivered orders
+    Route::get('getDel', [cart::class, 'gettingDelivered'])->name('list.getDel');
+    //3-returns a json file with all delivered orders
+    Route::get('del', [cart::class, 'delivered'])->name('list.del');
+    //4-returns a json file with all refused orders
+    Route::get('refused', [cart::class, 'refused'])->name('list.ref');
+    //5-returns all orders of all users
+    Route::get('', [cart::class, 'all'])->name('list.all');
+    //6-
     Route::get('user/{user}', [cart::class, 'userList'])->name('user');
-    //1-updates the status of the orders, receives a json file, and returns a message
+    //7-updates the status of the orders, receives a json file, and returns a message
     Route::put('{cart}', [cart::class, 'update'])->name('update');
 });

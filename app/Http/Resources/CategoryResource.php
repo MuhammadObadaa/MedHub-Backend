@@ -21,9 +21,11 @@ class CategoryResource extends JsonResource
     }
     public function toArray(Request $request): array
     {
+
+        $arabicLang = $request->hasHeader('lang') && $request->header('lang') == 'ar';
         return [
             'id' => $this->id,
-            'name' => $this->when($request->header('lang') == 'ar', $this->ar_name, $this->name),
+            'name' => $this->when($arabicLang, $this->ar_name, $this->name),
             //'medicines' => MedicineResource::collection($this->medicines5()->get())
         ];
     }

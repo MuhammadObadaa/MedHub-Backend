@@ -37,10 +37,7 @@ class MedicineResource extends JsonResource
         return [
             'id' => $this->id,
             //TODO: don't send isFavorite when it's favorite list
-            'isFavorite' => AuthMiddleware::getUser()->hasFavored(Medicine::where('id', $this->id)->first()),
-            //'category' => $this->when(!Route::is('categories.list') && !Route::is('categories.show'),$this->when($request->header('lang')=='ar',$this->category()->select('id','ar_name')->get(),$this->category()->select('id','name')->get())),
-            // TODO: fix ar_name in category
-            //'category' => $this->when(!Route::is('categories.list'), $this->when($arabicLang, $this->category()->select('id', 'ar_name')->first(), $this->category()->select('id', 'name')->first())),
+            'isFavorite' => $this->when(!Route::is('user.favorites'),AuthMiddleware::getUser()->hasFavored(Medicine::where('id', $this->id)->first())),
             'category' => $this->when(!Route::is('categories.list'), new CategoryResource($this->category()->first())),
             'name' => $this->when($arabicLang, $this->ar_name, $this->name),
             'scientificName' => $this->when($arabicLang, $this->ar_scientificName, $this->scientificName),
@@ -51,7 +48,6 @@ class MedicineResource extends JsonResource
             'ordered_quantity' => $this->when(Route::is('carts.*'), $this->pivot ? $this->pivot->quantity : null),
             'expirationDate' => $this->expirationDate,
             'price' => $this->price,
-            //'likes' => $this->favored()->count(),
             'image' => $this->getImageURL()
         ];
     }

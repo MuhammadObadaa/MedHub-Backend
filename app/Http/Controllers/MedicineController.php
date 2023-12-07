@@ -21,7 +21,7 @@ class MedicineController extends Controller
     //front-end developer must send the category_id for every medicine created
     public function store()
     {
-        //TODO: make some columns unique in the database, and validate them
+        //TODO: make image required
         $imageFile = '';
         if (request()->has('image')) {
             $validatedImage = Validator::make(request()->get('image'), [
@@ -63,7 +63,6 @@ class MedicineController extends Controller
         $message = ['message' => 'medicines listed successfully!'];
 
         return (new MedicineCollection($medicines))->additional($message);
-        //return MedicineCollection::make($medicines)->additional($message)->response()->setStatusCode(200);
         //return MedicineResource::collection($medicines)->additional($message)->response()->setStatusCode(200); this won't change collection name
     }
 
@@ -140,11 +139,11 @@ class MedicineController extends Controller
     //returns recent 10 medicines
     public function recent10()
     {
-        $medicines = Medicine::latest()->take(10)->get(); //TODO: orderby 'created_at' because it returns unexpected result
+        $medicines = Medicine::latest()->take(10)->get();
         $message = [
             'message' => 'recent 10 medicines displayed successfully!'
         ];
-        return MedicineResource::collection($medicines)->additional($message);
+        return (new MedicineCollection($medicines))->additional($message);
     }
 
     public function favorites()
@@ -152,6 +151,6 @@ class MedicineController extends Controller
         $medicines = AuthMiddleware::getUser()->favors()->get();
         $message = ['message' => 'favored medicines displayed successfully!'];
 
-        return MedicineResource::collection($medicines)->additional($message);
+        return (new MedicineCollection($medicines))->additional($message);
     }
 }

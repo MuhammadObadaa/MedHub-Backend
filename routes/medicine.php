@@ -12,19 +12,10 @@ use Illuminate\Support\Facades\Route;
 //second: whenever we mention a variable between curly braces like this, {medicine} we mean the id of the medicine, for example:
 //api/medicines/1
 
-//third: all the follwoing routes will return a message additionally to what they must returns
-
-//fourth: all the returned json fils are formatted according to the standard shapes (resoruces)
-
-//first: prefix goes before every route, for example in route number 2, the route will be like this
-//api/medicines/{medicine}
-
-//second: whenever we mention a variable between curly braces like this, {medicine} we mean the id of the medicine, for example:
-//api/medicines/1
-
 //third: all the following routes will return a message additionally to what they must returns
 
 //fourth: all the returned json fils are formatted according to the standard shapes (resources)
+
 
 Route::group(['prefix' => '/medicines/', 'as' => 'medicines.'], function () { // tested
     //1-returns a json file containing the medicines according to popularity, formatted according to the resource
@@ -48,5 +39,5 @@ Route::group(['prefix' => '/categories/', 'as' => 'categories.'], function () { 
 
 Route::group(['prefix' => '/search/', 'as' => 'search.'], function () { //tested
     Route::get('', [search::class, 'search'])->name('name');
-    Route::get('{categoryId}', [search::class, 'searchInCategory'])->name('category');
+    Route::get('{category}', [search::class, 'searchInCategory'])->name('category');
 });

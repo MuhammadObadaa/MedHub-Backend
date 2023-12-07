@@ -28,7 +28,7 @@ Route::group(['prefix' => '/user', 'as' => 'user.'], function () { // tested
     Route::post('/favor/{medicine}', [user::class, 'favor'])->name('favor');
     Route::post('/unFavor/{medicine}', [user::class, 'unFavor'])->name('unFavor');
     //5- returns a json file with favorite medicines of the user
-    Route::get('/favorites', [medicine::class, 'favorites'])->name('user.favorites');
+    Route::get('/favorites', [medicine::class, 'favorites'])->name('favorites');
     //7-returns a json file with the all carts info of the logged in user
     Route::get('/auth', [cart::class, 'authList'])->name('auth');
     Route::post('/logout', [auth::class, 'logout'])->name('logout');

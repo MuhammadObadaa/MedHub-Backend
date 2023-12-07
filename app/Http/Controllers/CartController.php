@@ -24,7 +24,7 @@ class CartController extends Controller
 
         $cartContents = request('data');
 
-        $cart = Cart::create(['user_id' => $user->id, 'bill' => '0', 'status' => 'preparing']); // other -> 'sent' and 'received'
+        $cart = Cart::create(['user_id' => $user->id, 'bill' => '0', 'status' => 'in preparation']);
 
         foreach ($cartContents as $order) {
             $cart->medicines()->attach($order['id'], ['quantity' => $order['quantity']]);
@@ -45,7 +45,7 @@ class CartController extends Controller
     {
         $carts = $user->carts()->get();
         $message = ['message' => 'orders of the user displayed successfully!'];
-        return (new CartCollection($carts))->additional($message)->response()->setStatusCode(200);
+        return (new CartCollection($carts))->additional($message);
         //TODO: remove setStatusCode because its the default
     }
 
@@ -54,7 +54,7 @@ class CartController extends Controller
     {
         $carts = Cart::latest()->get();
         $message = ['message' => 'all orders displayed successfully!'];
-        return (new CartCollection($carts))->additional($message)->response()->setStatusCode(200);
+        return (new CartCollection($carts))->additional($message);
     }
 
     //returns all carts in preparation according to latency
@@ -67,7 +67,7 @@ class CartController extends Controller
 
     public function refused()
     {
-        $carts = Cart::where('status', 'refused')->oldest()->get();
+        $carts = Cart::where('status', 'refused')->latest()->get();
         $message = ['message' => 'refused orders displayed successfully!'];
         return (new CartCollection($carts))->additional($message);
     }
@@ -75,13 +75,13 @@ class CartController extends Controller
     {
         $carts = Cart::where('status', 'getting delivered')->latest()->get();
         $message = ['message' => 'getting delivered orders user displayed successfully!'];
-        return (new CartCollection($carts))->additional($message)->response()->setStatusCode(200);
+        return (new CartCollection($carts))->additional($message);
     }
     public function delivered()
     {
         $carts = Cart::where('status', 'delivered')->latest()->get();
         $message = ['message' => 'delivered orders displayed successfully!'];
-        return (new CartCollection($carts))->additional($message)->response()->setStatusCode(200);
+        return (new CartCollection($carts))->additional($message);
     }
 
     //used by the user to display his own carts
@@ -89,14 +89,14 @@ class CartController extends Controller
     {
         $carts = AuthMiddleware::getUser()->carts()->get();
         $message = ['message' => 'your orders displayed successfully!'];
-        return (new CartCollection($carts))->additional($message)->response()->setStatusCode(200);
+        return (new CartCollection($carts))->additional($message);
     }
 
     //this function is used to display a specific cart
     public function show(Cart $cart)
     {
         $message = ['message' => 'order displayed successfully!'];
-        return (new CartResource($cart))->additional($message)->response()->setStatusCode(200);
+        return (new CartResource($cart))->additional($message);
     }
 
     //update function is used by the storeMan to update the status of the orders or the payment status
@@ -110,7 +110,7 @@ class CartController extends Controller
         if(request()->has('status') && ($cart->status == 'refused' || $cart->status == 'delivered')){
             $flag == true;
         }
-        else if(request()->has('status') && ($cart->status == "getting delivered")){
+        else if(request()->has('status') 67&& ($cart->status == "getting delivered")){
             if(request()->get('status') == "in preparation"){
                 $flag == true;
             }
@@ -181,7 +181,7 @@ class CartController extends Controller
                         $medicine->quantity = 0;
                         $medicine->save();
                         $medicine->pivot->save();
-                        $messages[$i++] = "the quantity of " . $medicine->name . " does not meet the customer need, we have limited the order quantity to " . $medicine->pivot->quantity;
+                        $messages[] = "the quantity of " . $medicine->name . " does not meet the customer need, we have limited the order quantity to " . $medicine->pivot->quantity;
                     } else {
                         $medicine->quantity = $medicine->quantity - $medicine->pivot->quantity;
                         $medicine->save();
@@ -189,7 +189,7 @@ class CartController extends Controller
                 } else {
                     $billUpdate += ($medicine->pivot->quantity * $medicine->price);
                     $cart->medicines()->detach($medicine);
-                    $messages[$i++] = "medicine " . $medicine->name . " is out of stock, we have removed it from your order";
+                    $messages[] = "medicine " . $medicine->name . " is out of stock, we have removed it from your order";
                 }
             }
             $cart->update(['bill' => $cart->bill - $billUpdate]);
@@ -204,7 +204,7 @@ class CartController extends Controller
                 ], 402 /* payment required */);
             }
 
-        $messages[$i++] = "'status of order updated successfully!'";
+        $messages[] = "status of order updated successfully!";
         $cart->update(["status" => request()->get('status')]);
         return response()->json(['message' => $messages]);
     }

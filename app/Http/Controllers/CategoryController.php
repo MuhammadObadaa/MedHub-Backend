@@ -20,7 +20,7 @@ class CategoryController extends Controller
         $message = [
             'message' => 'medicines listed successfully under a category!'
         ];
-        return MedicineResource::collection($medicines)->additional($message)->response()->setStatusCode(200);
+        return MedicineResource::collection($medicines)->additional($message);
     }
 
     //used by the storeMan to create a category
@@ -41,7 +41,7 @@ class CategoryController extends Controller
         $category->delete();
         return response()->json([
             'message' => 'category deleted successfully'
-        ], 200);
+        ]);
     }
 
     //this function return to the home page all the categories with the top 5 medicines in each category
@@ -49,7 +49,7 @@ class CategoryController extends Controller
     {
         $categories = Category::latest()->get();
         $message = ['message' => 'categories listed successfully!'];
-        return (new CategoryCollection($categories))->additional($message)->response()->setStatusCode(200);
+        return (new CategoryCollection($categories))->additional($message);
     }
 
     public function update(Category $category)
@@ -60,6 +60,6 @@ class CategoryController extends Controller
         ];
         $category->update($updated);
 
-        return response()->json(['message' => 'updated the category successfully!'], 200);
+        return response()->json(['message' => 'updated the category successfully!']);
     }
 }

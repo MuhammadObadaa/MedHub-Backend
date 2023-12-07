@@ -16,6 +16,7 @@ use Exception;
 
 class UserController extends Controller
 {
+    //TODO: recourse for user
     public function show()
     {
         $user = AuthMiddleware::getUser()->select('name', 'pharmacyName', 'pharmacyLocation', 'phoneNumber', 'image')->first();
@@ -26,20 +27,12 @@ class UserController extends Controller
         ]);
     }
 
-    //TODO: a new raw will be add to database when you favor a medicine even if it was already in the table
     public function favor(Medicine $medicine)
     {
         $user = AuthMiddleware::getUser();
 
-        if ($user->hasFavored($medicine))
-            return response()->json(['message' => 'Already in the favorite list!'], 400);
-
-        try {
-            // you can send medicine->id and the medicine object itself
-            $user->favors()->attach($medicine->id);
-        } catch (Exception $e) {
-            return response()->json(['message' => 'Something went wrong!'], 400);
-        }
+        // you can send medicine->id and the medicine object itself
+        $user->favors()->attach($medicine->id);
 
         $medicine->update(['popularity' =>  $medicine->popularity + 1]);
 
@@ -50,14 +43,7 @@ class UserController extends Controller
     {
         $user = AuthMiddleware::getUser();
 
-        if (!$user->hasFavored($medicine))
-            return response()->json(['message' => 'This medicine is not favored'], 400);
-
-        try {
-            $user->favors()->detach($medicine);
-        } catch (Exception $e) {
-            return response()->json(['message' => 'Something went wrong!'], 400);
-        }
+        $user->favors()->detach($medicine);
 
         $medicine->update(['popularity' =>  $medicine->popularity - 1]);
 
@@ -87,10 +73,10 @@ class UserController extends Controller
                 return response()->json(['message' => 'Invalid image file'], 400);
 
             $imageFile = request()->file('image')->store('app', 'public');
-            if (File::exists($user->image))
-                File::delete($user->image);
-            // if($user->image != null)
-            //     Storage::disk('public')->delete($user->image);
+            // if (File::exists($user->image))
+            //     File::delete($user->image);
+            if ($user->image != null)
+                Storage::disk('public')->delete($user->image);
 
             $user->update(['image' => $imageFile]);
         }
