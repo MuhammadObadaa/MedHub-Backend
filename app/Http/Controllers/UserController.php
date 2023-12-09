@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\Medicine;
@@ -16,15 +17,23 @@ use Exception;
 
 class UserController extends Controller
 {
-    //TODO: recourse for user
     public function show()
     {
-        $user = AuthMiddleware::getUser()->select('name', 'pharmacyName', 'pharmacyLocation', 'phoneNumber', 'image')->first();
-        return response()->json([
-            'user' => $user,
-            // 'request' => request()->cookie('token'),
-            // 'get' => Cookie::get('token')
-        ]);
+        $message = ['message' => 'your information displayed successfully!'];
+        return (new UserResource(AuthMiddleware::getUser()))->additional($message);
+    }
+
+    public function showUser(User $user)
+    {
+        $message = ['message' => 'User displayed successfully!'];
+        return (new UserResource($user))->additional($message);
+    }
+
+    public function list()
+    {
+        $users = User::where('is_admin', FALSE)->get();
+        $message = ['message' => 'User displayed successfully!'];
+        return UserResource::collection($users)->additional($message);
     }
 
     public function favor(Medicine $medicine)

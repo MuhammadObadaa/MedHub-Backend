@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController as category;
 use App\Http\Controllers\MedicineController as medicine;
+use App\Http\Controllers\UserController as user;
 use App\Http\Controllers\AdminController as admin;
 use App\Http\Controllers\CartController as cart;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,10 @@ Route::group(['prefix' => '/medicines/', 'as' => 'medicines.'], function () { //
     Route::put('{medicine}', [medicine::class, 'update'])->name('update');
 });
 
+Route::group(['prefix' => '/users/', 'as' => 'users.'], function () {
+    Route::get('', [user::class, 'list'])->name('list');
+    Route::get('{user}', [user::class, 'showUser'])->name('show');
+});
 
 Route::group(['prefix' => '/categories/', 'as' => 'categories.'], function () { // need to be tested
     Route::post('', [cart::class, 'store'])->name('store');
