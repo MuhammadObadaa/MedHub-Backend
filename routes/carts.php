@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () { //tested
     //6-
     Route::post('', [cart::class, 'store'])->name('store');
+    Route::get('', [cart::class, 'authList'])->name('list');
     //9-returns a json flow with all info of a specific cart including medicines
     Route::get('{cart}', [cart::class, 'show'])->name('show');
 });
