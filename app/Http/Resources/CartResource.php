@@ -3,8 +3,10 @@
 namespace App\Http\Resources;
 
 use App\Models\Medicine;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Route;
 
 class CartResource extends JsonResource
@@ -30,8 +32,7 @@ class CartResource extends JsonResource
                 'bill' => $this->bill,
                 'status' => $this->status,
                 'payment_status' => $this->payed,
-                //TODO: make a user resource and include it's info
-                'user_id' => $this->when(Route::is('carts.list.*'), $this->user_id),
+                'user' => $this->when(Route::is('carts.list.*'),new UserResource(User::where('id','user_id')->first())),
                 'ordered_at' => date_format($this->created_at, 'Y-m-d'),
                 'medicines' => $this->when(Route::is('carts.show'), MedicineResource::collection($this->medicines()->get()))
             ];

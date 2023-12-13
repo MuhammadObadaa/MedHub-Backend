@@ -41,13 +41,6 @@ class CartController extends Controller
     }
 
     //used by the storeMan to display the carts of a specific user
-    public function userList(User $user)
-    {
-        $carts = $user->carts()->get();
-        $message = ['message' => 'orders of the user displayed successfully!'];
-        return (new CartCollection($carts))->additional($message);
-        //TODO: remove setStatusCode because its the default
-    }
 
     //used by the storeMan, returns all the orders of all users
     public function all()
@@ -81,6 +74,13 @@ class CartController extends Controller
     {
         $carts = Cart::where('status', 'delivered')->latest()->get();
         $message = ['message' => 'delivered orders displayed successfully!'];
+        return (new CartCollection($carts))->additional($message);
+    }
+    //used by admin to display a user's carts
+    public function userList(User $user)
+    {
+        $carts = $user->carts()->get();
+        $message = ['message' => 'orders of the user displayed successfully!'];
         return (new CartCollection($carts))->additional($message);
     }
 
