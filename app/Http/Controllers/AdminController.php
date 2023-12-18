@@ -21,12 +21,18 @@ class AdminController extends Controller
         $FCMProjectKey = 'key=AAAA0Jd0UKU:APA91bH1SFvt7tvg0V_7y1gxzYZrrI7eJaG8zE-o2v_mY-kQOG8woYaPntYl8tfF8xxDGspZrFoWgW7WW7wAGFgEH1zHjTniGeYFQ_WkcVsoFkYyNbLkLn0-lOxxfSmaNgaZWFp2av1U';
         //dGEX2IE2QTyHYbUDXEi_i_:APA91bHPBiPPlQpjE6ftbzVwjst-1lzXvE-uCQ4kWtKb5CVeJ9vuTHq0eshgTyyJp8ypB6JAGnYcIG7nnHs6NjT8o81qsd_ZgJd8IF7yNKUfhSEMSRTRYylxvVYeDlDWILricepKlqNN
 
+        dd("{
+                \"to\": \"$to\",
+                \"notification\": {
+                \"title\": \"$FCMProjectName\",
+                \"body\":\"$message\"
+            }}");
         $response = Http::withBody(
             "{
-                'to': '$to',
-                'notification': {
-                'title': '$FCMProjectName',
-                'body':'$message'
+                \"to\": \"$to\",
+                \"notification\": {
+                \"title\": \"$FCMProjectName\",
+                \"body\":\"$message\"
             }}",
             "json"
         )->withHeaders([
@@ -67,6 +73,7 @@ class AdminController extends Controller
         //if he is updating the payment status
         if (request()->has('payed')) {
             $cart->update(['payed' => request('payed')]);
+
             $this->notify(request('FCMtoken'), 'cart' . $cart->id . 'has been payed');
 
             return response()->json(['message' => 'payment status changed successfully!'], 200);
