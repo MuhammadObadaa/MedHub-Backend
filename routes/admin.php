@@ -45,5 +45,5 @@ Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () { //tested
     //6-
     Route::get('user/{user}', [cart::class, 'userList'])->name('user');
     //7-updates the status of the orders, receives a json file, and returns a message
-    Route::put('{cart}', [cart::class, 'update'])->name('update');
+    Route::put('{cart}', [admin::class, 'update'])->name('update');
 });
