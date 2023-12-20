@@ -31,8 +31,8 @@ class StatisticsController extends Controller
 
     //this function does not contain dates
     public function userReport(){
-        //$user = AuthMiddleware::getUser();
-        $user = User::find(1);
+        $user = AuthMiddleware::getUser();
+        //$user = User::find(1);
         $totalOrders = $user->carts()->count();
         $refusedOrders = $user->carts()->where('status','refused')->count();
         $PreparingOrders = $user->carts()->where('status','in preparation')->count();
@@ -73,8 +73,8 @@ class StatisticsController extends Controller
 
     public function reportByDates($year, $month){
 
-        //$user = AuthMiddleware::getUser();
-        $user = User::find(1);
+        $user = AuthMiddleware::getUser();
+        //$user = User::find(1);
 
         if($year != 0 && $month != 0){
             $carts = $user->carts()->whereYear('created_at',$year)->whereMonth('created_at',$month)->get();
@@ -91,11 +91,12 @@ class StatisticsController extends Controller
             return $group->count();
         });
         return response()->json([
+            "points" =>[
             '1' => $cartsByWeek["1"]??0,
             '2' => $cartsByWeek["2"]??0,
             '3' => $cartsByWeek["3"]??0,
-            '4' => $cartsByWeek["4"]??0,
-
+            '4' => $cartsByWeek["4"]??0
+            ],
             'message' => 'chart returned successfully!'
         ]);
 
