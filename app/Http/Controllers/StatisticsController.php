@@ -91,11 +91,12 @@ class StatisticsController extends Controller
             return $group->count();
         });
         return response()->json([
+            "points" =>[
             '1' => $cartsByWeek["1"]??0,
             '2' => $cartsByWeek["2"]??0,
             '3' => $cartsByWeek["3"]??0,
-            '4' => $cartsByWeek["4"]??0,
-
+            '4' => $cartsByWeek["4"]??0
+            ],
             'message' => 'chart returned successfully!'
         ]);
 
