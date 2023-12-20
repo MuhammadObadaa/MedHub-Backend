@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController as user;
 use App\Http\Controllers\MedicineController as medicine;
 use App\Http\Controllers\CartController as cart;
 use App\Http\Controllers\search;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,4 +35,10 @@ Route::group(['prefix' => '/user', 'as' => 'user.'], function () { // tested
     Route::post('/logout', [auth::class, 'logout'])->name('logout');
     //TODO: password auth
     Route::put('/update', [user::class, 'update'])->name('update');
+    //takes month and year and return an array that makes a chart, default is stat/0/0
+    Route::get('/stat/{year}/{month}',[StatisticsController::class,'reportByDates'])->name('stat.dates');
+    //returns some numbers
+    Route::get('/stat',[StatisticsController::class,'userReport'])->name('stat');
+
+
 });

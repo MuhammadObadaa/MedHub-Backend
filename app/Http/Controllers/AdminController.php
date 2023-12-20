@@ -102,7 +102,6 @@ class AdminController extends Controller
         //if all medicines are out of the stock, refuse the order
 
         $messages = [];
-        $i = 0;
         $billUpdate = 0;
         if (request()->get('status') == "getting delivered") {
             $medicines = $cart->medicines;
