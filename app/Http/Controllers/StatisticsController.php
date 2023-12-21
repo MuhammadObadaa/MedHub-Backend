@@ -39,7 +39,7 @@ class StatisticsController extends Controller
         $deliveredOrders = $user->carts()->where('status','delivered')->count();
         $gettingDeliveredOrders = $user->carts()->where('status','getting delivered')->count();
         $favourtieMedicines = $user->favors->count();
-        $totalBill = $user->carts()->sum('bill');
+        $totalBill = (int) $user->carts()->sum('bill');
         $totalMed = 0;
         $catPercentage = [];
         $carts = $user->carts()->get();
@@ -53,7 +53,7 @@ class StatisticsController extends Controller
             }
         }
         foreach($catPercentage as &$perc){
-            $perc = number_format($perc * 100.0 / $totalMed,2);
+            $perc = (double)number_format($perc * 100.0 / $totalMed,2);
         }
         return response()->json([
             'total orders' => $totalOrders,
@@ -88,7 +88,7 @@ class StatisticsController extends Controller
         $cartsByWeek = $carts->groupBy(function ($cart){
             return $cart->created_at->weekOfMonth;
         })->map(function ($group){
-            return $group->count();
+            return ($group->sum('bill'))/1000000;
         });
         return response()->json([
             "points" =>[
@@ -98,7 +98,7 @@ class StatisticsController extends Controller
             '4' => $cartsByWeek["4"]??0
             ],
             'message' => 'chart returned successfully!'
-        ]);
+        ],200,[],JSON_PRETTY_PRINT);
 
 
     }
