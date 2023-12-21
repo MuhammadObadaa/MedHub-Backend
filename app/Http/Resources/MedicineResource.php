@@ -48,6 +48,7 @@ class MedicineResource extends JsonResource
             //short if statement is necessary 'causes even if the route is not carts.* it checks the true arg
             'ordered_quantity' => $this->when(Route::is('carts.*'), $this->pivot ? $this->pivot->quantity : null),
             'expirationDate' => $this->expirationDate,
+            'isExpired' => $this->when($this->expirationDate > now(),false,true),
             'price' => $this->price,
             'image' => $this->getImageURL()
         ];

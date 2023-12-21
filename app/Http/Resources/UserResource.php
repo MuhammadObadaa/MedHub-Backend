@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Route;
 
 class UserResource extends JsonResource
 {
@@ -21,7 +22,8 @@ class UserResource extends JsonResource
             "phoneNumber" => $this->phoneNumber,
             "pharmacyName" => $this->pharmacyName,
             "pharmacyLocation" => $this->pharmacyLocation,
-            "image" => $this->getImageURL()
+            "image" => $this->getImageURL(),
+            "all time payment" => (int) $this->when(Route::is('stat'),$this->carts()->sum('bill'))
         ];
         //return parent::toArray($request);
     }
