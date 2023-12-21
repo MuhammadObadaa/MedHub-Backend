@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController as auth;
+use App\Http\Controllers\AdminController as admin;
 use App\Http\Controllers\UserController as user;
 use App\Http\Controllers\searchController as search;
 use Illuminate\Support\Facades\Route;
@@ -23,3 +24,5 @@ Route::get('/', function () {
 //---- Authentication Routes
 Route::post('/register', [auth::class, 'store'])->name('register');
 Route::post('/login', [auth::class, 'login'])->name('login');
+
+Route::get('/test', [admin::class, 'test']);
