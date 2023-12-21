@@ -30,15 +30,11 @@ Route::group(['prefix' => '/user', 'as' => 'user.'], function () { // tested
     Route::post('/unFavor/{medicine}', [user::class, 'unFavor'])->name('unFavor');
     //5- returns a json file with favorite medicines of the user
     Route::get('/favorites', [medicine::class, 'favorites'])->name('favorites');
-    //7-returns a json file with the all carts info of the logged in user
-    Route::get('/auth', [cart::class, 'authList'])->name('auth');
     Route::post('/logout', [auth::class, 'logout'])->name('logout');
     //TODO: password auth
     Route::put('/update', [user::class, 'update'])->name('update');
     //takes month and year and return an array that makes a chart, default is stat/0/0
-    Route::get('/stat/{year}/{month}',[StatisticsController::class,'reportByDates'])->name('stat.dates');
+    Route::get('/stat/{year}/{month}', [StatisticsController::class, 'reportByDates'])->name('stat.dates');
     //returns some numbers
-    Route::get('/stat',[StatisticsController::class,'userReport'])->name('stat');
-
-
+    Route::get('/stat', [StatisticsController::class, 'userReport'])->name('stat');
 });
