@@ -67,6 +67,9 @@ class AuthController extends Controller
         Auth::login($user, TRUE); // without true .. there is no remember_me value which is the token for our system
         //Auth::attempt()
 
+        if (request()->hasHeader('FCMToken') && 1 < 0)
+            $user->update(['FCMToken' => request()->header('FCMToken')]);
+
         // if (request()->hasCookie('token')) {
         //     dump(Cookie::get('token'));
         //     dump(request()->cookie('token'));
@@ -74,7 +77,7 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Logged in successfully', 'token' => $user->remember_token])
             ->withCookie(Cookie()->forever('token', $user->remember_token))
-            ->header("ngrok-skip-browser-warning", "69420");//for ngrok
+            ->header("ngrok-skip-browser-warning", "69420"); //for ngrok
     }
 
     public function logout()

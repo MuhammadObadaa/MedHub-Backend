@@ -10,37 +10,79 @@ class AdminController extends Controller
 {
     //TODO: whats the best practice of setting routes position?
 
+    //https://youtube.com/playlist?list=PLuBL2DYgVDm2HktOlxMTqDn5zGZh1P_Gf&si=AXCuMdxSnyhpTILO
     /**
      * @param $to user firebase token
      * @param $message the message of notification
      */
     private function notify(string $to, string $message)
     {
-        $FCMProjectName = "MedHub";
+        $FCMTitle = "MedHub";
         $FCMApiRoute = 'https://fcm.googleapis.com/fcm/send';
         $FCMProjectKey = 'key=AAAA0Jd0UKU:APA91bH1SFvt7tvg0V_7y1gxzYZrrI7eJaG8zE-o2v_mY-kQOG8woYaPntYl8tfF8xxDGspZrFoWgW7WW7wAGFgEH1zHjTniGeYFQ_WkcVsoFkYyNbLkLn0-lOxxfSmaNgaZWFp2av1U';
-        //dGEX2IE2QTyHYbUDXEi_i_:APA91bHPBiPPlQpjE6ftbzVwjst-1lzXvE-uCQ4kWtKb5CVeJ9vuTHq0eshgTyyJp8ypB6JAGnYcIG7nnHs6NjT8o81qsd_ZgJd8IF7yNKUfhSEMSRTRYylxvVYeDlDWILricepKlqNN
 
-        dd("{
-                \"to\": \"$to\",
-                \"notification\": {
-                \"title\": \"$FCMProjectName\",
-                \"body\":\"$message\"
-            }}");
-        $response = Http::withBody(
-            "{
-                \"to\": \"$to\",
-                \"notification\": {
-                \"title\": \"$FCMProjectName\",
-                \"body\":\"$message\"
-            }}",
-            "json"
-        )->withHeaders([
-            'Accept' => '*/*',
-            'Content-Type' => 'application/json',
-            'Authorization' => $FCMProjectKey,
-        ])->post($FCMApiRoute);
-        echo $response->body();
+        $data = [
+            "registration_ids" => [$to], // or you can use 'to' key
+            "notification" => [
+                "title" => $FCMTitle,
+                "body" => $message,
+                //"sound" => "default", // for ios
+            ]
+        ];
+
+        $jsonData = json_encode($data);
+
+        $response = Http::withBody($jsonData, 'application/json')->withHeaders(
+            ['Authorization' => $FCMProjectKey]
+        )->post($FCMApiRoute);
+
+        return $response;
+    }
+
+    private function test()
+    {
+        //return $this->notify("f9znK07KScizyrb7GbAsD1:APA91bH0YAHw8wPmI0_eWnLgHthLrYsPezNso7PjhlunIBHRuD1OyOPc7oN7aqNHi1E5RIPN2HApzsaw_KSLmPOxOs6S70Ip3r33GDo-lzfk3fcKOY8K9xeJYj1EtFtL5bdvZv4Nq6w7", 'something');
+
+        $to = "fcm token";
+        $message = "something";
+        $FCMTitle = "MedHub";
+        $FCMApiRoute = 'https://fcm.googleapis.com/fcm/send';
+        $FCMProjectKey = 'key=AAAA0Jd0UKU:APA91bH1SFvt7tvg0V_7y1gxzYZrrI7eJaG8zE-o2v_mY-kQOG8woYaPntYl8tfF8xxDGspZrFoWgW7WW7wAGFgEH1zHjTniGeYFQ_WkcVsoFkYyNbLkLn0-lOxxfSmaNgaZWFp2av1U';
+
+        $data = [
+            "registration_ids" => [$to],
+            "notification" => [
+                "title" => $FCMTitle,
+                "body" => $message,
+                "sound" => "default",
+            ]
+        ];
+
+        $jsonData = json_encode($data);
+
+        $header = [
+            'Authorization: ' . $FCMProjectKey,
+            'Content-Type: application/json'
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $FCMApiRoute);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
+        //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+        //curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1); //due to error
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+        //$errors = curl_error($ch);
+        //$response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        return $result;
     }
 
     //update function is used by the storeMan to update the status of the orders or the payment status
@@ -74,7 +116,7 @@ class AdminController extends Controller
         if (request()->has('payed')) {
             $cart->update(['payed' => request('payed')]);
 
-            $this->notify(request('FCMtoken'), 'cart' . $cart->id . 'has been payed');
+            $this->notify("###UserFCMToken###", 'cart ' . $cart->id . ' has been payed');
 
             return response()->json(['message' => 'payment status changed successfully!'], 200);
         }
@@ -115,6 +157,7 @@ class AdminController extends Controller
 
             if ($noQuantity) {
                 $cart->update(['status' => 'refused']);
+                $this->notify("###UserFCMToken###", 'cart ' . $cart->id . ' has been refused');
                 return response()->json([
                     'message' => 'all medicines you ordered are out of stock, sorry for inconvenience',
                 ], 409);
@@ -152,6 +195,7 @@ class AdminController extends Controller
 
         $messages[] = "status of order updated successfully!";
         $cart->update(["status" => request()->get('status')]);
+        $this->notify("###UserFCMToken###", 'cart ' . $cart->id . ' has been delivered');
         return response()->json(['message' => $messages]);
     }
 }

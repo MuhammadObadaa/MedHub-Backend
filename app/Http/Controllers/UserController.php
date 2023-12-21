@@ -41,9 +41,11 @@ class UserController extends Controller
         $user = AuthMiddleware::getUser();
 
         // you can send medicine->id and the medicine object itself
-        $user->favors()->attach($medicine->id);
+        if (!$user->hasFavored($medicine->id)) {
+            $user->favors()->attach($medicine->id);
 
-        $medicine->update(['popularity' =>  $medicine->popularity + 1]);
+            $medicine->update(['popularity' =>  $medicine->popularity + 1]);
+        }
 
         return response()->json(['message' => 'medicine added to favorites successfully']);
     }
@@ -52,9 +54,11 @@ class UserController extends Controller
     {
         $user = AuthMiddleware::getUser();
 
-        $user->favors()->detach($medicine);
+        if ($user->hasFavored($medicine->id)) {
+            $user->favors()->detach($medicine);
 
-        $medicine->update(['popularity' =>  $medicine->popularity - 1]);
+            $medicine->update(['popularity' =>  $medicine->popularity - 1]);
+        }
 
         return response()->json(['message' => 'medicine removed from favorites successfully']);
     }
