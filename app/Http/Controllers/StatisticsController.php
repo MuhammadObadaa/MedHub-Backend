@@ -98,6 +98,7 @@ class StatisticsController extends Controller
                 '4' => $cartsByWeek["4"] ?? 0
             ],
             'message' => 'chart returned successfully!'
-        ], 200, [], JSON_PRETTY_PRINT);
+        ]);
+        //, 200, [], JSON_PRETTY_PRINT);
     }
 }

@@ -13,7 +13,8 @@ class searchController extends Controller
         $searched_text = request('searched_text');
         $by = request('by');
 
-        if (request()->hasHeader('lang') && request()->header('lang') == 'ar')
+        //TODO: when creating ar_brand delete last condition
+        if (request()->hasHeader('lang') && request()->header('lang') == 'ar' && $by != 'brand')
             $by = 'ar_' . $by;
 
         //case_sensitive search
@@ -28,7 +29,7 @@ class searchController extends Controller
         $searched_text = request('searched_text');
         $by = request('by');
 
-        if (request()->hasHeader('lang') && request()->header('lang') == 'ar')
+        if (request()->hasHeader('lang') && request()->header('lang') == 'ar' && $by != 'brand')
             $by = 'ar_' . $by;
 
         $medicine = Medicine::where('category_id', $category);
