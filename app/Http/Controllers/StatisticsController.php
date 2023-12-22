@@ -10,6 +10,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Medicine;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 // ●statistics
@@ -175,9 +176,71 @@ class StatisticsController extends Controller
             'top medicines' => $topMedicines,
             'top companies' => $topCompanies,
             'categories percetages in stock' => $inStockCategoriesPercentages,
-            'categories percentages for sold medicines' => $soldCategoriesPercentages
+            'categories percentages for sold medicines' => $soldCategoriesPercentages,
+
+            'message' => 'statistics displayed successfully!'
         ]);
-
-
     }
+
+    public function adminStatByDates($year, $month){
+        //this function is for time charts
+        if($month == 0){
+            $carts = Cart::whereYear('created_at', $year)->where('payed',1)->get();
+            $IncomeByMonth = $carts->groupBy(function ($cart){
+                return $cart->created_at->format('m');
+            })->map(function ($group){
+                return ($group->sum('bill'))/1000000.0;
+            });
+
+            for($i = 1; $i<13;$i++){
+                $IncomeByMonth[(string)$i] = $IncomeByMonth[(string)$i]??0;
+            }
+            return response()->json([
+                "points" => $IncomeByMonth,
+                'message' => 'year chart displayed successfully!'
+            ],200,[],JSON_PRETTY_PRINT);
+        }
+        else{
+            $carts = Cart::whereYear('created_at',$year)->whereMonth('created_at',$month)->where('payed',1)->get();
+            $IncomeByWeek = $carts->groupBy(function ($cart){
+                return $cart->created_at->weekOfMonth;
+            })->map(function ($group){
+                return ($group->sum('bill'))/1000000.0;
+            });
+
+            for($i = 1; $i<5;$i++){
+                $IncomeByWeek[(string)$i] = $IncomeByWeek[(string)$i]??0;
+            }
+            return response()->json([
+                "points" => $IncomeByWeek,
+                'message' => 'month chart displayed successfully!'
+            ],200,[],JSON_PRETTY_PRINT);
+        }
+    }
+
+
+    // public function adminStatByWeekDates($year1,$month1,$day1,$year2,$month2,$day2){
+
+
+    //     //$carts = Cart::whereBetween('created_at', [Carbon::create($year1,$month1,$day1),Carbon::create($year2,$month2,$day2,23,59,59)])->get();
+    //     $carts = Cart::whereBetween('created_at',[Carbon::create($year1,$month1)->startOfWeek()->addDays($day1 * 6 - 6),Carbon::create($year1,$month1)->startOfWeek()->addDays($day1 * 6)])->get();
+
+    //     return response()->json($carts,200,[],JSON_PRETTY_PRINT);
+    //     dd($carts);
+    //     $IncomeByDay = $carts->groupBy(function ($cart){
+    //         return $cart->created_at->format('N');
+    //     })->map(function ($group){
+    //         return ($group->sum('bill'))/1000000.0;
+    //     });
+    //     for($i = 1; $i<8;$i++){
+    //         $IncomeByDay[(string)$i] = $IncomeByDay[(string)$i]??0;
+    //     }
+    //     return response()->json([
+    //         "points" => $IncomeByDay,
+    //         'message' => 'day chart displayed successfully!'
+    //     ],200,[],JSON_PRETTY_PRINT);
+    // }
+
+
+
 }

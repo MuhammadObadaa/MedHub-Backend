@@ -27,3 +27,5 @@ Route::post('/register', [auth::class, 'store'])->name('register');
 Route::post('/login', [auth::class, 'login'])->name('login');
 
 Route::get('/test', [admin::class, 'test']);
+
+Route::get('admin/stat/{year}/{month}',[StatisticsController::class,'adminStatByDates']);
