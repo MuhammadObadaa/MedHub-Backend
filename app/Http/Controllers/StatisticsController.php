@@ -107,7 +107,7 @@ class StatisticsController extends Controller
 
         $userCnt = User::count();
         $ordersCnt = Cart::count();
-        $inPreperationOrders = Cart::where('status','in preparation')->count();
+        $inPreparationOrders = Cart::where('status','in preparation')->count();
         $gettingDeliveredOrders = Cart::where('status','getting delivered')->count();
         $deliveredOrders = Cart::where('status','delivered')->count();
         $refusedOrders = Cart::where('status','refused')->count();
@@ -156,15 +156,15 @@ class StatisticsController extends Controller
                 $soldCategoriesPercentages[$name] = ($soldCategoriesPercentages[$name] ?? 0) + $medicine->pivot->quantity;
             }
         }
-        foreach($soldCategoriesPercentages as &$perc){
-            $perc = (float) number_format(($perc * 100.0)/$soldMedicines,2);
+        foreach($soldCategoriesPercentages as &$percentage){
+            $percentage = (float) number_format(($percentage * 100.0)/$soldMedicines,2);
         }
 
 
         return response()->json([
             'users count' => $userCnt,
             'orders count' => $ordersCnt,
-            'in preparation orders' => $inPreperationOrders,
+            'in preparation orders' => $inPreparationOrders,
             'getting delivered orders' => $gettingDeliveredOrders,
             'delivered orders' => $deliveredOrders,
             'refused orders' => $refusedOrders,
@@ -174,7 +174,7 @@ class StatisticsController extends Controller
             'top users' => $topUsers,
             'top medicines' => $topMedicines,
             'top companies' => $topCompanies,
-            'categories percetages in stock' => $inStockCategoriesPercentages,
+            'categories percentages in stock' => $inStockCategoriesPercentages,
             'categories percentages for sold medicines' => $soldCategoriesPercentages
         ]);
 

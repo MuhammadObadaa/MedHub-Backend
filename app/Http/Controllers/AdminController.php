@@ -116,7 +116,7 @@ class AdminController extends Controller
         if (request()->has('payed')) {
             $cart->update(['payed' => request('payed')]);
 
-            $this->notify("###UserFCMToken###", 'cart ' . $cart->id . ' has been payed');
+            $this->notify($cart->user->FCMToken, 'cart ' . $cart->id . ' has been payed');
 
             return response()->json(['message' => 'payment status changed successfully!'], 200);
         }
@@ -157,7 +157,7 @@ class AdminController extends Controller
 
             if ($noQuantity) {
                 $cart->update(['status' => 'refused']);
-                $this->notify("###UserFCMToken###", 'cart ' . $cart->id . ' has been refused');
+                $this->notify($cart->user->FCMToken, 'cart ' . $cart->id . ' has been refused');
                 return response()->json([
                     'message' => 'all medicines you ordered are out of stock, sorry for inconvenience',
                 ], 409);
@@ -195,7 +195,8 @@ class AdminController extends Controller
 
         $messages[] = "status of order updated successfully!";
         $cart->update(["status" => request()->get('status')]);
-        $this->notify("###UserFCMToken###", 'cart ' . $cart->id . ' has been delivered');
+        $this->notify($cart->user()->FCMToken, 'cart ' . $cart->id . ' has been delivered');
+        //TODO: make sure that the user delivered the cart.
         return response()->json(['message' => $messages]);
     }
 }

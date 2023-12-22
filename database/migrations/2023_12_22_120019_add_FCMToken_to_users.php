@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('categories', function (Blueprint $table) {
-            $table->string('ar_name')->after('name');
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('FCMToken')->after('remember_token');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('categories', function (Blueprint $table) {
-            $table->dropColumn('ar_name');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('FCMToken');
         });
     }
 };
