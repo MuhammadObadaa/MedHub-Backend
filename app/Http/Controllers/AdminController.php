@@ -145,6 +145,7 @@ class AdminController extends Controller
 
         $messages = [];
         $billUpdate = 0;
+        //TODO: add profitUpdate
         if (request()->get('status') == "getting delivered") {
             $medicines = $cart->medicines;
             $noQuantity = true;

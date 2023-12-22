@@ -50,6 +50,7 @@ class MedicineController extends Controller
             'quantity' => request()->get('quantity'),
             'expirationDate' => request()->get('expirationDate'),
             'price' => request()->get('price'),
+            'profit' => request()->get('profit'),
             'image' => $imageFile
         ]);
 
@@ -104,6 +105,7 @@ class MedicineController extends Controller
             'quantity' => request()->get('quantity'),
             'expirationDate' => request()->get('expirationDate'),
             'price' => request()->get('price'),
+            'profit' => request()->get('profit'),
         ];
 
         if (request()->has('image')) {
