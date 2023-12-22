@@ -42,7 +42,6 @@ class CartController extends Controller
         return response()->json(['message' => 'Cart added successfully!']);
     }
 
-    //used by the storeMan to display the carts of a specific user
 
     //used by the storeMan, returns all the orders of all users
     public function all()
@@ -93,7 +92,7 @@ class CartController extends Controller
         $message = ['message' => 'your orders displayed successfully!'];
         return (new CartCollection($carts))->additional($message);
     }
-
+    
     //this function is used to display a specific cart
     public function show(Cart $cart)
     {

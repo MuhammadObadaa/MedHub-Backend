@@ -2,9 +2,6 @@
 
 use App\Http\Controllers\AuthController as auth;
 use App\Http\Controllers\AdminController as admin;
-use App\Http\Controllers\UserController as user;
-use App\Http\Controllers\searchController as search;
-use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
 /*

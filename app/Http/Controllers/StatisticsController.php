@@ -13,12 +13,7 @@ use App\Models\Medicine;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-// ●statistics
-// * for the storeman
-// [  ] get the income over timestamps
-// [  ] get a sheet of days of month, week versus income/profit
-// [  ] get a sheet of month versus income/profit
-// [  ] get a sheet of weeks versus new customers
+
 
 class StatisticsController extends Controller
 {
@@ -29,14 +24,13 @@ class StatisticsController extends Controller
     {
         $ar = (request()->header('lang') == 'ar');
         $user = AuthMiddleware::getUser();
-        //$user = User::find(1);
         $totalOrders = $user->carts()->count();
         $refusedOrders = $user->carts()->where('status', 'refused')->count();
         $PreparingOrders = $user->carts()->where('status', 'in preparation')->count();
         $deliveredOrders = $user->carts()->where('status', 'delivered')->count();
         $gettingDeliveredOrders = $user->carts()->where('status', 'getting delivered')->count();
         $favoriteMedicines = $user->favors->count();
-        $totalBill = (int) $user->carts()->sum('bill');
+        $totalBill = (int) $user->carts()->where('payed',1)->sum('bill');
         $totalMed = 0;
         $catPercentage = [];
         $carts = $user->carts()->where('payed',1)->get();
@@ -71,18 +65,17 @@ class StatisticsController extends Controller
         ]);
     }
 
-    public function statByDates($year, $month)
+    public function userCharts($year, $month)
     {
 
         $user = AuthMiddleware::getUser();
-        //$user = User::find(1);
 
         if ($year != 0 && $month != 0) {
-            $carts = $user->carts()->whereYear('created_at', $year)->whereMonth('created_at', $month)->get();
+            $carts = $user->carts()->whereYear('created_at', $year)->whereMonth('created_at', $month)->where('payed',1)->get();
         } else {
             $start = now()->startOfMonth();
             $end = now()->endOfMonth();
-            $carts = $user->carts()->whereBetween('created_at', [$start, $end])->get();
+            $carts = $user->carts()->whereBetween('created_at', [$start, $end])->where('payed',1)->get();
         }
 
         $cartsByWeek = $carts->groupBy(function ($cart) {
@@ -182,7 +175,7 @@ class StatisticsController extends Controller
         ]);
     }
 
-    public function adminStatByDates($year, $month){
+    public function adminCharts($year, $month){
         //this function is for time charts
         if($month == 0){
             $carts = Cart::whereYear('created_at', $year)->where('payed',1)->get();
@@ -191,12 +184,22 @@ class StatisticsController extends Controller
             })->map(function ($group){
                 return ($group->sum('bill'))/1000000.0;
             });
-
-            for($i = 1; $i<13;$i++){
+            $ProfitByMonth = $carts->groupBy(function ($cart){
+                return $cart->created_at->format('m');
+            })->map(function ($group){
+                return ($group->sum('profit'))/1000000.0;
+            });
+            for($i = 1; $i<10;$i++){
+                $IncomeByMonth['0'.(string)$i] = $IncomeByMonth['0'.(string)$i]??0;
+                $ProfitByMonth['0'.(string)$i] = $ProfitByMonth['0'.(string)$i]??0;
+            }
+            for($i = 10; $i<13;$i++){
                 $IncomeByMonth[(string)$i] = $IncomeByMonth[(string)$i]??0;
+                $ProfitByMonth[(string)$i] = $ProfitByMonth[(string)$i]??0;
             }
             return response()->json([
-                "points" => $IncomeByMonth,
+                "income" => $IncomeByMonth,
+                "profit" => $ProfitByMonth,
                 'message' => 'year chart displayed successfully!'
             ]);
         }
@@ -207,16 +210,48 @@ class StatisticsController extends Controller
             })->map(function ($group){
                 return ($group->sum('bill'))/1000000.0;
             });
+            $ProfitByWeek = $carts->groupBy(function ($cart){
+                return $cart->created_at->weekOfMonth;
+            })->map(function ($group){
+                return ($group->sum('profit'))/1000000.0;
+            });
 
             for($i = 1; $i<5;$i++){
                 $IncomeByWeek[(string)$i] = $IncomeByWeek[(string)$i]??0;
+                $ProfitByWeek[(string)$i] = $ProfitByWeek[(string)$i]??0;
             }
             return response()->json([
-                "points" => $IncomeByWeek,
+                "income" => $IncomeByWeek,
+                "profit" => $ProfitByWeek,
                 'message' => 'month chart displayed successfully!'
             ]);
         }
     }
 
+
+    public function adminWeekCharts($year,$week){
+        $carts = Cart::whereBetween('created_at',[Carbon::create($year)->week($week)->startOfWeek(),Carbon::create($year)->week($week)->endOfWeek()])->where('payed',1)->get();
+        $IncomeByDay = $carts->groupBy(function ($cart){
+            return $cart->created_at->format('N');
+        })->map(function ($group){
+            return ($group->sum('bill'))/1000000.0;
+        });
+
+        $ProfitByDay = $carts->groupBy(function ($cart){
+            return $cart->created_at->format('N');
+        })->map(function ($group){
+            return ($group->sum('profit'))/1000000.0;
+        });
+
+        for($i = 1; $i<8;$i++){
+            $IncomeByDay[(string)$i] = $IncomeByDay[(string)$i]??0;
+            $ProfitByDay[(string)$i] = $ProfitByDay[(string)$i]??0;
+        }
+        return response()->json([
+            "income" => $IncomeByDay,
+            "profit" => $ProfitByDay,
+            'message' => 'day chart displayed successfully!'
+        ]);
+    }
 
 }

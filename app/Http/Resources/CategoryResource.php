@@ -26,7 +26,6 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->when($arabicLang, $this->ar_name, $this->name),
-            //'medicines' => MedicineResource::collection($this->medicines5()->get())
         ];
     }
 }

@@ -145,6 +145,7 @@ class AdminController extends Controller
 
         $messages = [];
         $billUpdate = 0;
+        $profitUpdate = 0;
         //TODO: add profitUpdate
         if (request()->get('status') == "getting delivered") {
             $medicines = $cart->medicines;
@@ -155,7 +156,6 @@ class AdminController extends Controller
                     break;
                 }
             }
-
             if ($noQuantity) {
                 $cart->update(['status' => 'refused']);
                 $this->notify($cart->user->FCMToken, 'cart ' . $cart->id . ' has been refused');
@@ -167,6 +167,7 @@ class AdminController extends Controller
                 if ($medicine->quantity != 0) {
                     if ($medicine->quantity < $medicine->pivot->quantity) {
                         $billUpdate += (($medicine->pivot->quantity - $medicine->quantity) * $medicine->price);
+                        $profitUpdate += (($medicine->pivot->quantity - $medicine->quantity) * $medicine->profit);
                         $medicine->pivot->quantity = $medicine->quantity;
                         $medicine->quantity = 0;
                         $medicine->save();
@@ -178,11 +179,13 @@ class AdminController extends Controller
                     }
                 } else {
                     $billUpdate += ($medicine->pivot->quantity * $medicine->price);
+                    $profitUpdate += ($medicine->pivot->quantity * $medicine->profit);
                     $cart->medicines()->detach($medicine);
                     $messages[] = "medicine " . $medicine->name . " is out of stock, we have removed it from your order";
                 }
             }
-            $cart->update(['bill' => $cart->bill - $billUpdate]);
+            $cart->update(['bill' => $cart->bill - $billUpdate,
+                            'profit' => $cart->profit-$profitUpdate]);
         }
 
         //third approach which is the best approach in my opinion, all updates must be handled the moment the customer send his orders

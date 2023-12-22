@@ -26,15 +26,17 @@ class CartResource extends JsonResource
 
     public function toArray(Request $request): array
     {
+        $report = (Route::is('admin.report') || Route::is('user.report'));
         return
             [
                 'id' => $this->id,
                 'bill' => $this->bill,
+                'profit' => $this->when($report,$this->profit),
                 'status' => $this->status,
                 'payment_status' => $this->payed,
-                'user' => $this->when(Route::is('carts.list.*'),new UserResource(User::where('id','user_id')->first())),
+                'user' => $this->when(Route::is('carts.list.*') || Route::is('admin.report'),new UserResource($this->user()->first())),
                 'ordered_at' => date_format($this->created_at, 'Y-m-d'),
-                'medicines' => $this->when(Route::is('carts.show'), MedicineResource::collection($this->medicines()->get()))
+                'medicines' => $this->when(Route::is('carts.show') || $report , MedicineResource::collection($this->medicines()->get()))
             ];
     }
 }
