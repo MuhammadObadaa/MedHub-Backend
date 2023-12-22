@@ -50,3 +50,5 @@ Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () { //tested
 });
 
 Route::get('/stat',[StatisticsController::class,'adminStat'])->name('stat');
+Route::get('stat/{year}/{month}',[StatisticsController::class,'adminStatByDates'])->name('stat.dates');
+
