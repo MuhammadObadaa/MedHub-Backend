@@ -21,10 +21,11 @@ class CartController extends Controller
     {
         $user = AuthMiddleware::getUser();
         $bill = 0;
+        $profit = 0;
 
         $cartContents = request('data');
 
-        $cart = Cart::create(['user_id' => $user->id, 'bill' => '0', 'status' => 'in preparation']);
+        $cart = Cart::create(['user_id' => $user->id, 'bill' => 0, 'profit' => 0]);
 
         foreach ($cartContents as $order) {
             $cart->medicines()->attach($order['id'], ['quantity' => $order['quantity']]);
@@ -32,10 +33,11 @@ class CartController extends Controller
             //if it works don't touch it :)
             $medicine = Medicine::where('id', $order['id'])->first();
             $bill += $order['quantity'] * $medicine->price;
+            $profit += $order['quantity'] * $medicine->profit;
             $medicine->update(['popularity' =>  $medicine->popularity + 2 * $order['quantity']]);
         }
 
-        $cart->update(['bill' => $bill]);
+        $cart->update(['bill' => $bill, 'profit' => $profit]);
 
         return response()->json(['message' => 'Cart added successfully!']);
     }
@@ -98,5 +100,4 @@ class CartController extends Controller
         $message = ['message' => 'order displayed successfully!'];
         return (new CartResource($cart))->additional($message);
     }
-
 }

@@ -46,9 +46,11 @@ class MedicineController extends Controller
             'description' => request()->get('description'),
             'ar_description' => request()->get('ar_description'),
             'brand' => request()->get('brand'),
+            'ar_brand' => request()->get('ar_brand'),
             'quantity' => request()->get('quantity'),
             'expirationDate' => request()->get('expirationDate'),
             'price' => request()->get('price'),
+            'profit' => request()->get('profit'),
             'image' => $imageFile
         ]);
 
@@ -99,9 +101,11 @@ class MedicineController extends Controller
             'description' => request()->get('description'),
             'ar_description' => request()->get('ar_description'),
             'brand' => request()->get('brand'),
+            'ar_brand' => request()->get('ar_brand'),
             'quantity' => request()->get('quantity'),
             'expirationDate' => request()->get('expirationDate'),
             'price' => request()->get('price'),
+            'profit' => request()->get('profit'),
         ];
 
         if (request()->has('image')) {

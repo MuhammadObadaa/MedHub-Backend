@@ -67,8 +67,7 @@ class AuthController extends Controller
         Auth::login($user, TRUE); // without true .. there is no remember_me value which is the token for our system
         //Auth::attempt()
 
-        if (request()->hasHeader('FCMToken') && 1 < 0)
-            $user->update(['FCMToken' => request()->header('FCMToken')]);
+        $user->update(['FCMToken' => request()->header('FCMToken')]);
 
         // if (request()->hasCookie('token')) {
         //     dump(Cookie::get('token'));
