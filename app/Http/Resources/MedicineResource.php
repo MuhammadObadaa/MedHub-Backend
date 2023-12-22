@@ -43,12 +43,12 @@ class MedicineResource extends JsonResource
             'name' => $this->when($arabicLang, $this->ar_name, $this->name),
             'scientificName' => $this->when($arabicLang, $this->ar_scientificName, $this->scientificName),
             'description' => $this->when($arabicLang, $this->ar_description, $this->description),
-            'brand' => $this->brand,
+            'brand' => $this->when($arabicLang, $this->ar_brand, $this->brand),
             'quantity' => $this->quantity,
             //short if statement is necessary 'causes even if the route is not carts.* it checks the true arg
             'ordered_quantity' => $this->when(Route::is('carts.*'), $this->pivot ? $this->pivot->quantity : null),
             'expirationDate' => $this->expirationDate,
-            'isExpired' => $this->when($this->expirationDate > now(),false,true),
+            'isExpired' => $this->when($this->expirationDate > now(), false, true),
             'price' => $this->price,
             'image' => $this->getImageURL()
         ];
