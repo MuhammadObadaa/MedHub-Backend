@@ -5,6 +5,8 @@ use App\Http\Controllers\MedicineController as medicine;
 use App\Http\Controllers\UserController as user;
 use App\Http\Controllers\AdminController as admin;
 use App\Http\Controllers\CartController as cart;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => '/medicines/', 'as' => 'medicines.'], function () { // need to tested
@@ -47,3 +49,16 @@ Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () { //tested
     //7-updates the status of the orders, receives a json file, and returns a message
     Route::put('{cart}', [admin::class, 'update'])->name('update');
 });
+
+Route::group(['as' => 'admin.'],function (){
+
+    Route::get('/stat',[StatisticsController::class,'adminStat'])->name('stat');
+
+    Route::get('/charts/{year}/{month}',[StatisticsController::class,'adminCharts'])->name('charts');
+
+    Route::get('/weekcharts/{year}/{week}',[StatisticsController::class,'adminWeekCharts'])->name('weekcharts');
+
+    Route::get('/report/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}',[ReportsController::class,'adminReport'])->name('report');
+
+});
+
