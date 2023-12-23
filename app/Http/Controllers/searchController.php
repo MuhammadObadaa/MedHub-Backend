@@ -8,11 +8,8 @@ use App\Models\Medicine;
 
 class searchController extends Controller
 {
-    public function search()
+    public function search($searched_text,$by)
     {
-        $searched_text = request('searched_text');
-        $by = request('by');
-
         //TODO: when creating ar_brand delete last condition
         if (request()->hasHeader('lang') && request()->header('lang') == 'ar')
             $by = 'ar_' . $by;
@@ -24,11 +21,8 @@ class searchController extends Controller
 
         return (new MedicineCollection($medicine))->additional($message);
     }
-    public function searchInCategory($category)
+    public function searchInCategory($category,$searched_text,$by)
     {
-        $searched_text = request('searched_text');
-        $by = request('by');
-
         if (request()->hasHeader('lang') && request()->header('lang') == 'ar')
             $by = 'ar_' . $by;
 
