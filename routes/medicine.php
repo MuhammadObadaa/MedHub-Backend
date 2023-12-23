@@ -21,7 +21,7 @@ Route::group(['prefix' => '/medicines/', 'as' => 'medicines.'], function () { //
     //1-returns a json file containing the medicines according to popularity, formatted according to the resource
     Route::get('', [medicine::class, 'list'])->name('list');
     //2-returns a json file with top 10 medicines according to popularity
-    Route::get('/top10', [medicine::class, 'top10'])->name('top10');
+    Route::get('top10', [medicine::class, 'top10'])->name('top10');
     //3-returns a json file with 10 recently added medicines according to latency
     Route::get('recent10', [medicine::class, 'recent10'])->name('recent10');
     //4-receives the id, returns a json file with medicine info
@@ -38,6 +38,6 @@ Route::group(['prefix' => '/categories/', 'as' => 'categories.'], function () { 
 
 
 Route::group(['prefix' => '/search/', 'as' => 'search.'], function () { //tested
-    Route::get('', [search::class, 'search'])->name('name');
-    Route::get('{category}', [search::class, 'searchInCategory'])->name('category');
+    Route::get('{searched_text}/{by}', [search::class, 'search'])->name('name');
+    Route::get('{category}/{searched_text}/{by}', [search::class, 'searchInCategory'])->name('category');
 });
