@@ -57,6 +57,7 @@ class AuthController extends Controller
     {
         $user = User::where('phoneNumber', request('phoneNumber'))->first();
 
+
         if (!$user)
             return response()->json(['message' => 'No such phoneNumber'], 400);
         if (!Hash::check(request('password'), $user->password))
@@ -64,10 +65,13 @@ class AuthController extends Controller
 
         //TODO: make rememberMe optional
         //TODO: No need to send the rememberMe option to the login. where we already create our own token in the cookie
+
         Auth::login($user, TRUE); // without true .. there is no remember_me value which is the token for our system
         //Auth::attempt()
 
-        $user->update(['FCMToken' => request()->header('FCMToken')]);
+        $user->FCMToken = request()->header('FCMToken');
+        $user->save();
+
 
         // if (request()->hasCookie('token')) {
         //     dump(Cookie::get('token'));
