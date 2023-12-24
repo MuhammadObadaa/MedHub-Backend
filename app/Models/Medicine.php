@@ -22,6 +22,7 @@ class Medicine extends Model
         'price',
         'popularity',
         'image',
+        'profit',
         'category_id'
     ];
 
