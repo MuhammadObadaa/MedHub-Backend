@@ -14,6 +14,7 @@ class Medicine extends Model
         'scientificName',
         'ar_scientificName',
         'brand',
+        'ar_brand',
         'description',
         'ar_description',
         'quantity',
@@ -21,6 +22,7 @@ class Medicine extends Model
         'price',
         'popularity',
         'image',
+        'profit',
         'category_id'
     ];
 
