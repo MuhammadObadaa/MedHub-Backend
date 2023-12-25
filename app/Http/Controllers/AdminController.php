@@ -85,6 +85,17 @@ class AdminController extends Controller
         return $result;
     }
 
+    public function paidCart($cart)
+    {
+        $cart = Cart::where('id', $cart)->first();
+
+        $cart->update(['payed' => true]);
+
+        $this->notify($cart->user->FCMToken, 'cart ' . $cart->id . ' has been payed');
+
+        return response()->json(['message' => 'payment status changed successfully!'], 200);
+    }
+
     //update function is used by the storeMan to update the status of the orders or the payment status
     //the order of the status of the order must be handled carefully by the front end
     public function update($cart)
@@ -111,15 +122,6 @@ class AdminController extends Controller
                 'status' => 400 //bad request
             ]);
         }*/
-
-        //if he is updating the payment status
-        if (request()->has('payed')) {
-            $cart->update(['payed' => request('payed')]);
-
-            $this->notify($cart->user->FCMToken, 'cart ' . $cart->id . ' has been payed');
-
-            return response()->json(['message' => 'payment status changed successfully!'], 200);
-        }
 
         //choose one of the two approaches, comment the other
 
@@ -184,8 +186,10 @@ class AdminController extends Controller
                     $messages[] = "medicine " . $medicine->name . " is out of stock, we have removed it from your order";
                 }
             }
-            $cart->update(['bill' => $cart->bill - $billUpdate,
-                            'profit' => $cart->profit-$profitUpdate]);
+            $cart->update([
+                'bill' => $cart->bill - $billUpdate,
+                'profit' => $cart->profit - $profitUpdate
+            ]);
         }
 
         //third approach which is the best approach in my opinion, all updates must be handled the moment the customer send his orders
