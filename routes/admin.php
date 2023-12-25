@@ -47,18 +47,17 @@ Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () { //tested
     //6-
     Route::get('user/{user}', [cart::class, 'userList'])->name('user');
     //7-updates the status of the orders, receives a json file, and returns a message
+    Route::put('paidCart/{cart}', [admin::class, 'paidCart'])->name('paidCart');
     Route::put('{cart}', [admin::class, 'update'])->name('update');
 });
 
-Route::group(['as' => 'admin.'],function (){
+Route::group(['as' => 'admin.'], function () {
 
-    Route::get('/stat',[StatisticsController::class,'adminStat'])->name('stat');
+    Route::get('/stat', [StatisticsController::class, 'adminStat'])->name('stat');
 
-    Route::get('/charts/{year}/{month}',[StatisticsController::class,'adminCharts'])->name('charts');
+    Route::get('/charts/{year}/{month}', [StatisticsController::class, 'adminCharts'])->name('charts');
 
-    Route::get('/weekcharts/{year}/{week}',[StatisticsController::class,'adminWeekCharts'])->name('weekcharts');
+    Route::get('/weekcharts/{year}/{week}', [StatisticsController::class, 'adminWeekCharts'])->name('weekcharts');
 
-    Route::get('/report/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}',[ReportsController::class,'adminReport'])->name('report');
-
+    Route::get('/report/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}', [ReportsController::class, 'adminReport'])->name('report');
 });
-
