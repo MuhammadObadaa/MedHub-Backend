@@ -92,7 +92,7 @@ class AdminController extends Controller
         $cart->payed = 1;
         $cart->save();
 
-        $this->notify($cart->user->FCMToken, 'cart ' . $cart->id . ' has been payed');
+        $this->notify($cart->user()->FCMToken, 'cart ' . $cart->id . ' has been payed');
 
         return response()->json(['message' => 'the order '.$cart->id.' was payed successfully!'], 200);
     }
@@ -160,7 +160,7 @@ class AdminController extends Controller
             }
             if ($noQuantity) {
                 $cart->update(['status' => 'refused']);
-                $this->notify($cart->user->FCMToken, 'order ' . $cart->id . ' has been refused, all medicines you ordered are out of stock, sorry for inconvenience');
+                $this->notify($cart->user()->FCMToken, 'order ' . $cart->id . ' has been refused, all medicines you ordered are out of stock, sorry for inconvenience');
                 return response()->json([
                     'message' => 'all medicines you ordered are out of stock, sorry for inconvenience',
                 ], 409);
@@ -175,7 +175,7 @@ class AdminController extends Controller
                         $medicine->quantity = 0;
                         $medicine->save();
                         $medicine->pivot->save();
-                        $this->notify($cart->user->FCMToken, 'in order ' . $cart->id .' the available quantity of ' . $medicine->name . ' does not meet the your need, we have limited the quantity to ' . $medicine->pivot->quantity);
+                        $this->notify($cart->user()->FCMToken, 'in order ' . $cart->id .' the available quantity of ' . $medicine->name . ' does not meet the your need, we have limited the quantity to ' . $medicine->pivot->quantity);
                     } else {
                         $medicine->quantity = $medicine->quantity - $medicine->pivot->quantity;
                         $medicine->save();
@@ -184,7 +184,7 @@ class AdminController extends Controller
                     $billUpdate += ($medicine->pivot->quantity * $medicine->pivot->price);
                     $profitUpdate += ($medicine->pivot->quantity * $medicine->pivot->profit);
                     $cart->medicines()->detach($medicine);
-                    $this->notify($cart->user->FCMToken, 'in order ' . $cart->id . ' medicine '. $medicine->name . ' is out of stock, we have removed it from your order');
+                    $this->notify($cart->user()->FCMToken, 'in order ' . $cart->id . ' medicine '. $medicine->name . ' is out of stock, we have removed it from your order');
                 }
             }
             $cart->update([
