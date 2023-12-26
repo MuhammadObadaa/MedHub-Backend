@@ -21,20 +21,6 @@ class MedicineController extends Controller
     //front-end developer must send the category_id for every medicine created
     public function store()
     {
-        //TODO: make image required
-        $imageFile = '';
-        if (request()->has('image')) {
-            $validatedImage = Validator::make(request()->all(), [
-                'image' => 'image'
-            ]);
-            if ($validatedImage->fails()) {
-                return response()->json([
-                    'message' => 'Invalid image file'
-                ],415);
-            } else {
-                $imageFile = request()->file('image')->store('app', 'public');
-            }
-        }
 
         Medicine::create([
             'category_id' => request()->get('category_id'), //the id is sent for every medicine
@@ -51,7 +37,7 @@ class MedicineController extends Controller
             'expirationDate' => request()->get('expirationDate'),
             'price' => request()->get('price'),
             'profit' => request()->get('profit'),
-            'image' => $imageFile
+            'image' =>  request()->file('image')->store('app', 'public')
         ]);
 
         return response()->json(['message' => 'medicine added successfully']);
@@ -105,7 +91,6 @@ class MedicineController extends Controller
     {
         $updated = [
             'category_id' => request()->get('category_id'), //the id is sent for every medicine
-            //'category_id' => Category::where('name',request()->get('categoryName'))->orWhere('ar-name',request()->get('name'))->first()->id
             'name' => request()->get('name'),
             'ar_name' => request()->get('ar_name'),
             'scientificName' => request()->get('scientificName'),
@@ -121,20 +106,11 @@ class MedicineController extends Controller
         ];
 
         if (request()->has('image')) {
-            $validatedImage = Validator::make(request()->all(), [
-                'image' => 'image'
-            ]);
-            if ($validatedImage->fails()) {
-                return response()->json([
-                    'message' => 'Invalid image file'
-                ],415);
-            } else {
-                if ($medicine->image != '') {
-                    Storage::disk('public')->delete($medicine->image);
-                }
-                $imageFile = request()->file('image')->store('app', 'public');
-                $updated['image'] = $imageFile;
+            if ($medicine->image != '') {
+                Storage::disk('public')->delete($medicine->image);
             }
+            $imageFile = request()->file('image')->store('app', 'public');
+            $updated['image'] = $imageFile;
         }
 
         $medicine->update($updated);
