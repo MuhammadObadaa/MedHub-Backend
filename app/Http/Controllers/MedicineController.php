@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Spatie;
 
 class MedicineController extends Controller
 {
@@ -22,7 +23,7 @@ class MedicineController extends Controller
     public function store()
     {
 
-        Medicine::create([
+        $medicine = Medicine::create([
             'category_id' => request()->get('category_id'), //the id is sent for every medicine
             //'category_id' => Category::where('name',request()->get('categoryName'))->orWhere('ar-name',request()->get('name'))->first()->id
             'name' => request()->get('name'),
@@ -39,6 +40,9 @@ class MedicineController extends Controller
             'profit' => request()->get('profit'),
             'image' =>  request()->file('image')->store('app', 'public')
         ]);
+        //$medicine->addMediaFromBase64(request()->get('image'))->usingFileName(time() . '.' . request()->get('image')->getClientOriginalExtension())->toMediaCollection('app','public');
+
+        // $medicine->addMedia("download.jpg")->preservingOriginal()->toMediaCollection('medicines');
 
         return response()->json(['message' => 'medicine added successfully']);
     }

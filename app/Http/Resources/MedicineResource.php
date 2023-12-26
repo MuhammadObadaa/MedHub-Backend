@@ -48,10 +48,10 @@ class MedicineResource extends JsonResource
             'quantity' => $this->when(!$report && !$stat,$this->quantity),
             //short if statement is necessary 'causes even if the route is not carts.* it checks the true arg
             'ordered_quantity' => $this->when(!$stat,$this->pivot ? $this->pivot->quantity : null),
-            'expirationDate' => $this->when(Route::is('carts.*') || $report,$this->pivot->expirationDate,$this->expirationDate),
+            'expirationDate' => $this->when(Route::is('carts.*') || $report,$this->pivot?$this->pivot->expirationDate:null,$this->expirationDate),
             'isExpired' => $this->when(!$report && !$stat,$this->when($this->expirationDate > now(), false, true)),
-            'price' => $this->when(Route::is('carts.*') || $report,$this->pivot->price,$this->price) ,
-            'profit' => $this->when(Route::is('admin.*'), $this->when(Route::is('carts.*') || $report, $this->pivot->profit,$this->profit)),
+            'price' => $this->when(Route::is('carts.*') || $report,$this->pivot?$this->pivot->price:null,$this->price) ,
+            'profit' => $this->when(Route::is('admin.*'), $this->when(Route::is('carts.*') || $report,$this->pivot?$this->pivot->profit:null,$this->profit)),
             'image' => $this->when(!$report && !$stat,$this->getImageURL())
         ];
     }
