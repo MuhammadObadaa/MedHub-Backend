@@ -21,7 +21,6 @@ class User extends Authenticatable
         'name',
         'password',
         'pharmacyName',
-        'pharmacyLocation',
         'phoneNumber',
         'image'
     ];
