@@ -153,7 +153,7 @@ class AdminController extends Controller
             $medicines = $cart->medicines;
             $noQuantity = true;
             foreach ($medicines as $medicine) {
-                if ($medicine->quantity != 0) {
+                if ($medicine->available && $medicine->quantity != 0) {
                     $noQuantity = false;
                     break;
                 }
@@ -167,17 +167,19 @@ class AdminController extends Controller
 
             }
             foreach ($medicines as $medicine) {
-                if ($medicine->quantity != 0) {
+                if ($medicine->available && $medicine->quantity != 0) {
                     if ($medicine->quantity < $medicine->pivot->quantity) {
                         $billUpdate += (($medicine->pivot->quantity - $medicine->quantity) * $medicine->pivot->price);
                         $profitUpdate += (($medicine->pivot->quantity - $medicine->quantity) * $medicine->pivot->profit);
                         $medicine->pivot->quantity = $medicine->quantity;
                         $medicine->quantity = 0;
+                        $medicine->popularity = $medicine->popularity + 2 * $medicine->pivot->quantity;
                         $medicine->save();
                         $medicine->pivot->save();
                         $this->notify($cart->user()->FCMToken, 'in order ' . $cart->id .' the available quantity of ' . $medicine->name . ' does not meet the your need, we have limited the quantity to ' . $medicine->pivot->quantity);
                     } else {
                         $medicine->quantity = $medicine->quantity - $medicine->pivot->quantity;
+                        $medicine->popularity = $medicine->popularity + 2 * $medicine->pivot->quantity;
                         $medicine->save();
                     }
                 } else {

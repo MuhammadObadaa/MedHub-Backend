@@ -34,7 +34,6 @@ class CartController extends Controller
             //if it works don't touch it :)
             $bill += $order['quantity'] * $medicine->price;
             $profit += $order['quantity'] * $medicine->profit;
-            $medicine->update(['popularity' =>  $medicine->popularity + 2 * $order['quantity']]);
         }
 
         $cart->update(['bill' => $bill, 'profit' => $profit]);

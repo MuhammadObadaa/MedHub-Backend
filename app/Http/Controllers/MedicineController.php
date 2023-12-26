@@ -77,7 +77,7 @@ class MedicineController extends Controller
             ]);
         }
         else{
-            $medicine->available = 1;
+            $medicine->available = 0;
             $medicine->save();
             return response()->json([
                 'message' => 'medicine is linked to reports and statistics, so it is updated to be unavailable'
@@ -109,7 +109,7 @@ class MedicineController extends Controller
             'profit' => request()->get('profit'),
         ];
 
-        if (request()->has('image')) {
+        if (request()->get('image') != '') {
             if ($medicine->image != '') {
                 Storage::disk('public')->delete($medicine->image);
             }
