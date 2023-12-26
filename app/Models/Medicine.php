@@ -23,6 +23,7 @@ class Medicine extends Model
         'popularity',
         'image',
         'profit',
+        'available',
         'category_id'
     ];
 
@@ -61,7 +62,7 @@ class Medicine extends Model
 
     public function getImageURL()
     {
-        if ($this->image != "" && $this->image != null) {
+        if ($this->image != "") {
             //first arg is the path of the file relative to the public directory
             return url('storage', $this->image);
         }

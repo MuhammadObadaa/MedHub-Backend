@@ -37,7 +37,7 @@ class CartResource extends JsonResource
                 'payment_status' => $this->payed,
                 'user' => $this->when( $carts || Route::is('admin.report'),new UserResource($this->user()->first())),
                 'ordered_at' => date_format($this->created_at, 'Y-m-d'),
-                'received_at' => $this->when($this->status == 'delivered',date_format($this->update_at,'Y-m-d')),
+                'received_at' => $this->when($this->status == 'delivered',date_format($this->updated_at,'Y-m-d')),
                 'medicines' => $this->when(Route::is('carts.show') || $report , MedicineResource::collection($this->medicines()->get()))
             ];
     }

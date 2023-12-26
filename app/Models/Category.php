@@ -16,6 +16,6 @@ class Category extends Model
 
     //returns the medicine under this category
     public function medicines(){
-        return $this->hasMany(Medicine::class,'category_id','id')->OrderBy('popularity','DESC');
+        return $this->hasMany(Medicine::class,'category_id','id')->OrderBy('popularity','DESC')->where('available',1);
     }
 }

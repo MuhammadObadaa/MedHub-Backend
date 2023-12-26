@@ -30,7 +30,7 @@ class MedicineController extends Controller
             if ($validatedImage->fails()) {
                 return response()->json([
                     'message' => 'Invalid image file'
-                ]);
+                ],415);
             } else {
                 $imageFile = request()->file('image')->store('app', 'public');
             }
@@ -60,7 +60,7 @@ class MedicineController extends Controller
     //list function is used by the pharmacist to browse all the medicines in general, with no specific category
     public function list()
     {
-        $medicines = Medicine::OrderBy('popularity', 'DESC')->get();
+        $medicines = Medicine::OrderBy('popularity', 'DESC')->where('available',1)->get();
 
         $message = ['message' => 'medicines listed successfully!'];
 
@@ -75,12 +75,24 @@ class MedicineController extends Controller
         return (new MedicineResource($medicine))->additional($message);
     }
 
+
+
     public function destroy(Medicine $medicine)
     {
-        $medicine->delete();
-        return response()->json([
-            'message' => 'medicine deleted successfully!'
-        ]);
+        if($medicine->popularity == 0){
+            Storage::disk('public')->delete($medicine->image);
+            $medicine->delete();
+            return response()->json([
+                'message' => 'medicine deleted successfully!'
+            ]);
+        }
+        else{
+            $medicine->available = 1;
+            $medicine->save();
+            return response()->json([
+                'message' => 'medicine is linked to reports and statistics, so it is updated to be unavailable'
+            ]);
+        }
     }
 
 
@@ -115,7 +127,7 @@ class MedicineController extends Controller
             if ($validatedImage->fails()) {
                 return response()->json([
                     'message' => 'Invalid image file'
-                ]);
+                ],415);
             } else {
                 if ($medicine->image != '') {
                     Storage::disk('public')->delete($medicine->image);
@@ -135,7 +147,7 @@ class MedicineController extends Controller
     //returns top 10 medicines
     public function top10()
     {
-        $medicines = Medicine::OrderBy('popularity', 'DESC')->take(10)->get();
+        $medicines = Medicine::OrderBy('popularity', 'DESC')->where('available',1)->take(10)->get();
         $message = ['message' => 'top 10 medicines displayed successfully!'];
         return (new MedicineCollection($medicines))->additional($message);
     }
@@ -143,7 +155,7 @@ class MedicineController extends Controller
     //returns recent 10 medicines
     public function recent10()
     {
-        $medicines = Medicine::latest()->take(10)->get();
+        $medicines = Medicine::latest()->where('available',1)->take(10)->get();
         $message = [
             'message' => 'recent 10 medicines displayed successfully!'
         ];

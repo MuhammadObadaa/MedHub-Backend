@@ -39,7 +39,7 @@ class AuthController extends Controller
         }
 
         if (User::where('phoneNumber', request('phoneNumber'))->first())
-            return response()->json(['message' => 'This phoneNumber already exist'], 400);
+            return response()->json(['message' => 'This phone number already exist'], 400);
 
         //TODO: handle the exceptions with connection to DB
         $user = User::create([

@@ -15,7 +15,7 @@ Route::group(['prefix' => '/medicines/', 'as' => 'medicines.'], function () { //
     //2-receives the id of the medicine in the url, delete the medicine from the database
     Route::delete('{medicine}', [medicine::class, 'destroy'])->name('destroy');
     //3-receive a json file, with updated medicine attributes, and the id in the url, updates the medicine
-    Route::put('{medicine}', [medicine::class, 'update'])->name('update');
+    Route::post('{medicine}', [medicine::class, 'update'])->name('update');
 });
 
 Route::group(['prefix' => '/users/', 'as' => 'users.'], function () {
@@ -28,7 +28,7 @@ Route::group(['prefix' => '/categories/', 'as' => 'categories.'], function () { 
     //1-receives the id of the category, delete it
     Route::delete('{category}', [category::class, 'destroy'])->name('destroy');
     //2-receives the id of the category and a json file with updated info, updates the category
-    Route::put('{category}', [category::class, 'update'])->name('update');
+    Route::post('{category}', [category::class, 'update'])->name('update');
 });
 
 //8-returns cart list for a specific user
@@ -47,9 +47,9 @@ Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () { //tested
     //6-
     Route::get('user/{user}', [cart::class, 'userList'])->name('user');
     //7-updates the status of the orders, receives a json file, and returns a message
-    Route::put('pay/{cart}', [admin::class, 'pay'])->name('paidCart');
-    
-    Route::put('{cart}', [admin::class, 'update'])->name('update');
+    Route::post('pay/{cart}', [admin::class, 'pay'])->name('paidCart');
+
+    Route::post('{cart}', [admin::class, 'update'])->name('update');
 });
 
 Route::group(['as' => 'admin.'], function () {

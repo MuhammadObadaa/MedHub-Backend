@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 //---- Tokens_need routes
 Route::group(['prefix' => '/user', 'as' => 'user.'], function () { // tested
-    
+
     Route::get('', [user::class, 'show'])->name('show');
     //TODO : IDA: switch with favor/id
     Route::post('/favor/{medicine}', [user::class, 'favor'])->name('favor');
@@ -33,7 +33,7 @@ Route::group(['prefix' => '/user', 'as' => 'user.'], function () { // tested
 
     Route::post('/logout', [auth::class, 'logout'])->name('logout');
     //TODO: password auth
-    Route::put('/update', [user::class, 'update'])->name('update');
+    Route::post('/update', [user::class, 'update'])->name('update');
 
     Route::get('/stat',[StatisticsController::class,'userStat'])->name('stat');
 
