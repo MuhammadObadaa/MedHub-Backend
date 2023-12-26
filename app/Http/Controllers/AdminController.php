@@ -85,7 +85,7 @@ class AdminController extends Controller
         return $result;
     }
 
-    public function paidCart($cart)
+    public function pay($cart)
     {
         $cart = Cart::where('id', $cart)->first();
 
@@ -93,7 +93,7 @@ class AdminController extends Controller
 
         $this->notify($cart->user->FCMToken, 'cart ' . $cart->id . ' has been payed');
 
-        return response()->json(['message' => 'payment status changed successfully!'], 200);
+        return response()->json(['message' => 'the order number: '.$cart->id.' was payed successfully!'], 200);
     }
 
     //update function is used by the storeMan to update the status of the orders or the payment status
@@ -145,7 +145,6 @@ class AdminController extends Controller
         //and if quantity in stock is zero, remove the medicine from the order
         //if all medicines are out of the stock, refuse the order
 
-        $messages = [];
         $billUpdate = 0;
         $profitUpdate = 0;
         //TODO: add profitUpdate
@@ -160,10 +159,11 @@ class AdminController extends Controller
             }
             if ($noQuantity) {
                 $cart->update(['status' => 'refused']);
-                $this->notify($cart->user->FCMToken, 'cart ' . $cart->id . ' has been refused');
+                $this->notify($cart->user->FCMToken, 'order ' . $cart->id . ' has been refused, all medicines you ordered are out of stock, sorry for inconvenience');
                 return response()->json([
                     'message' => 'all medicines you ordered are out of stock, sorry for inconvenience',
                 ], 409);
+
             }
             foreach ($medicines as $medicine) {
                 if ($medicine->quantity != 0) {
@@ -174,7 +174,7 @@ class AdminController extends Controller
                         $medicine->quantity = 0;
                         $medicine->save();
                         $medicine->pivot->save();
-                        $messages[] = "the quantity of " . $medicine->name . " does not meet the customer need, we have limited the order quantity to " . $medicine->pivot->quantity;
+                        $this->notify($cart->user->FCMToken, 'in order ' . $cart->id .' the available quantity of ' . $medicine->name . ' does not meet the your need, we have limited the quantity to ' . $medicine->pivot->quantity);
                     } else {
                         $medicine->quantity = $medicine->quantity - $medicine->pivot->quantity;
                         $medicine->save();
@@ -183,7 +183,8 @@ class AdminController extends Controller
                     $billUpdate += ($medicine->pivot->quantity * $medicine->price);
                     $profitUpdate += ($medicine->pivot->quantity * $medicine->profit);
                     $cart->medicines()->detach($medicine);
-                    $messages[] = "medicine " . $medicine->name . " is out of stock, we have removed it from your order";
+                    $this->notify($cart->user->FCMToken, 'in order ' . $cart->id . ' medicine '. $medicine->name . ' is out of stock, we have removed it from your order');
+
                 }
             }
             $cart->update([
@@ -194,17 +195,18 @@ class AdminController extends Controller
 
         //third approach which is the best approach in my opinion, all updates must be handled the moment the customer send his orders
 
-        if (request()->get('status') == "delivered")
+        if (request()->get('status') == "delivered") {
             if ($cart->payed == false) {
                 return response()->json([
                     'message' => 'cannot deliver the order without payment!'
                 ], 402 /* payment required */);
             }
+        }
 
-        $messages[] = "status of order updated successfully!";
+        $message = "status of order has been updated successfully!";
         $cart->update(["status" => request()->get('status')]);
-        $this->notify($cart->user()->FCMToken, 'cart ' . $cart->id . ' has been delivered');
-        //TODO: make sure that the user delivered the cart.
-        return response()->json(['message' => $messages]);
+        $this->notify($cart->user()->FCMToken, 'order ' . $cart->id . ' is '.$cart->status);
+        //TODO: make sure that the user received the cart.
+        return response()->json(['message' => $message]);
     }
 }

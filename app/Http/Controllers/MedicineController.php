@@ -117,7 +117,7 @@ class MedicineController extends Controller
                     'message' => 'Invalid image file'
                 ]);
             } else {
-                if ($medicine->image != null) {
+                if ($medicine->image != '') {
                     Storage::disk('public')->delete($medicine->image);
                 }
                 $imageFile = request()->file('image')->store('app', 'public');

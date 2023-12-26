@@ -35,9 +35,9 @@ class MedicineResource extends JsonResource
         $arabicLang = $request->hasHeader('lang') && $request->header('lang') == 'ar';
         $report = (Route::is('admin.report') || Route::is('user.report'));
         $stat = (Route::is('admin.stat') || Route::is('user.stat'));
+
         return [
             'id' => $this->id,
-            //TODO: don't send isFavorite when it's favorite list
             //'isFavorite' => $this->when(!Route::is('user.favorites'),AuthMiddleware::getUser()->hasFavored(Medicine::where('id', $this->id)->first())),
             'isFavorite' => $this->when(!$report && !$stat,AuthMiddleware::getUser()->hasFavored(Medicine::where('id', $this->id)->first())),
             'category' => $this->when(!Route::is('categories.list'), new CategoryResource($this->category()->first())),
