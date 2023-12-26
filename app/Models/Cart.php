@@ -13,7 +13,8 @@ class Cart extends Model
         'user_id',
         'bill',
         'status',
-        'payed'
+        'payed',
+        'profit'
     ];
 
     // eagre loading
