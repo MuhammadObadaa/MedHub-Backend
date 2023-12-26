@@ -15,7 +15,7 @@ class searchController extends Controller
             $by = 'ar_' . $by;
 
         //case_sensitive search
-        $medicine = Medicine::where($by, 'like', '%' . $searched_text . '%')->OrderBy('popularity', 'DESC')->get();
+        $medicine = Medicine::where($by, 'like', '%' . $searched_text . '%')->OrderBy('popularity', 'DESC')->where('available',1)->get();
 
         $message = ['message' => 'medicines listed successfully!'];
 
@@ -26,7 +26,7 @@ class searchController extends Controller
         if (request()->hasHeader('lang') && request()->header('lang') == 'ar')
             $by = 'ar_' . $by;
 
-        $medicine = Medicine::where('category_id', $category);
+        $medicine = Medicine::where('category_id', $category)->where('available',1);
 
         $medicine = $medicine->where($by, 'like', '%' . $searched_text . '%')->OrderBy('popularity', 'DESC')->get();
 

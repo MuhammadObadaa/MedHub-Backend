@@ -28,10 +28,10 @@ class CartController extends Controller
         $cart = Cart::create(['user_id' => $user->id, 'bill' => 0, 'profit' => 0]);
 
         foreach ($cartContents as $order) {
-            $cart->medicines()->attach($order['id'], ['quantity' => $order['quantity']]);
+            $medicine = Medicine::where('id', $order['id'])->first();
+            $cart->medicines()->attach($medicine->id, ['quantity' => $order['quantity'], 'price' => $medicine->price, 'profit' => $medicine->profit, 'expirationDate'=>$medicine->expirationDate]);
             //TODO: is it better to get medicine price from Medicine method or keep it as this?
             //if it works don't touch it :)
-            $medicine = Medicine::where('id', $order['id'])->first();
             $bill += $order['quantity'] * $medicine->price;
             $profit += $order['quantity'] * $medicine->profit;
             $medicine->update(['popularity' =>  $medicine->popularity + 2 * $order['quantity']]);
@@ -92,7 +92,7 @@ class CartController extends Controller
         $message = ['message' => 'your orders displayed successfully!'];
         return (new CartCollection($carts))->additional($message);
     }
-    
+
     //this function is used to display a specific cart
     public function show(Cart $cart)
     {

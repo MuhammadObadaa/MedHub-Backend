@@ -107,19 +107,19 @@ class StatisticsController extends Controller
         $refusedOrders = Cart::where('status','refused')->count();
         //another way to some pivot attributes in laravel, look totalMed in userStat
         $soldMedicines = Cart::where('payed',1)->join('cart_medicine','id','=','cart_medicine.cart_id')->sum('quantity');
-        $inStockMedicines = Medicine::where('quantity','!=',0)->where('expirationDate','>',now())->count();
-        $inStockQuantity = Medicine::where('quantity','!=',0)->where('expirationDate','>',now())->sum('quantity');
+        $inStockMedicines = Medicine::where('quantity','!=',0)->where('expirationDate','>',now())->where('available',1)->count();
+        $inStockQuantity = Medicine::where('quantity','!=',0)->where('expirationDate','>',now())->where('available',1)->sum('quantity');
 
         //orderBy takes a function that sums the bill column from the carts table and it only takes the carts of the user by joining the tables with whereColumn
         $topUsers = UserResource::collection(User::orderBy(function($query){
             $query->selectRaw('sum(bill)')->from('carts')->whereColumn('users.id','carts.user_id');
         },'desc')->take(5)->get());
 
-        $topMedicines = MedicineResource::collection(Medicine::orderBy('popularity','desc')->take(5)->get());
+        $topMedicines = MedicineResource::collection(Medicine::orderBy('popularity','desc')->where('available',1)->take(5)->get());
 
         //this code should not be written like that, but we did it as so because brand is not an independent entity in the database
         $topCompanies = [];
-        $medicines = Medicine::get();
+        $medicines = Medicine::where('available',1)->get();
         foreach($medicines as $medicine){
             $topCompanies[$medicine->brand] = ($topCompanies[$medicine->brand] ?? 0) + $medicine->popularity;
         }

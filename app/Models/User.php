@@ -22,7 +22,8 @@ class User extends Authenticatable
         'password',
         'pharmacyName',
         'phoneNumber',
-        'image'
+        'image',
+        'FCMToken'
     ];
 
 
@@ -54,7 +55,7 @@ class User extends Authenticatable
     //returns the medicines that the user favored
     public function favors()
     {
-        return $this->belongsToMany(Medicine::class, 'medicine_user', 'user_id', 'medicine_id')->withTimestamps();
+        return $this->belongsToMany(Medicine::class, 'medicine_user', 'user_id', 'medicine_id')->where('available',1)->withTimestamps();
     }
     //returns if the user has favored a medicine or not
     public function hasFavored(Medicine $medicine)

@@ -7,7 +7,7 @@ use App\Http\Resources\CategoryCollection;
 use Illuminate\Http\Request;
 use App\Http\Resources\MedicineResource;
 use App\Models\Category;
-
+use App\Models\Medicine;
 
 //I found the use of category controller in organizing the routes and work generally
 class CategoryController extends Controller
@@ -38,6 +38,11 @@ class CategoryController extends Controller
     //used by storeMan to delete a category and all the medicines under it, may not be used by the front-end developer
     public function destroy(Category $category)
     {
+        if($category->hasMany(Medicine::class,'category_id','id')->count() != 0){
+            return response()->json([
+                'message' => 'category has medicines under it, cannot be deleted'
+            ],400);
+        }
         $category->delete();
         return response()->json([
             'message' => 'category deleted successfully'

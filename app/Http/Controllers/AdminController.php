@@ -89,11 +89,12 @@ class AdminController extends Controller
     {
         $cart = Cart::where('id', $cart)->first();
 
-        $cart->update(['payed' => true]);
+        $cart->payed = 1;
+        $cart->save();
 
         $this->notify($cart->user->FCMToken, 'cart ' . $cart->id . ' has been payed');
 
-        return response()->json(['message' => 'the order number: '.$cart->id.' was payed successfully!'], 200);
+        return response()->json(['message' => 'the order '.$cart->id.' was payed successfully!'], 200);
     }
 
     //update function is used by the storeMan to update the status of the orders or the payment status
@@ -168,8 +169,8 @@ class AdminController extends Controller
             foreach ($medicines as $medicine) {
                 if ($medicine->quantity != 0) {
                     if ($medicine->quantity < $medicine->pivot->quantity) {
-                        $billUpdate += (($medicine->pivot->quantity - $medicine->quantity) * $medicine->price);
-                        $profitUpdate += (($medicine->pivot->quantity - $medicine->quantity) * $medicine->profit);
+                        $billUpdate += (($medicine->pivot->quantity - $medicine->quantity) * $medicine->pivot->price);
+                        $profitUpdate += (($medicine->pivot->quantity - $medicine->quantity) * $medicine->pivot->profit);
                         $medicine->pivot->quantity = $medicine->quantity;
                         $medicine->quantity = 0;
                         $medicine->save();
@@ -180,11 +181,10 @@ class AdminController extends Controller
                         $medicine->save();
                     }
                 } else {
-                    $billUpdate += ($medicine->pivot->quantity * $medicine->price);
-                    $profitUpdate += ($medicine->pivot->quantity * $medicine->profit);
+                    $billUpdate += ($medicine->pivot->quantity * $medicine->pivot->price);
+                    $profitUpdate += ($medicine->pivot->quantity * $medicine->pivot->profit);
                     $cart->medicines()->detach($medicine);
                     $this->notify($cart->user->FCMToken, 'in order ' . $cart->id . ' medicine '. $medicine->name . ' is out of stock, we have removed it from your order');
-
                 }
             }
             $cart->update([
