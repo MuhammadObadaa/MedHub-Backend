@@ -26,8 +26,10 @@ Route::group(['prefix' => '/users/', 'as' => 'users.'], function () {
 });
 
 Route::group(['prefix' => '/categories/', 'as' => 'categories.'], function () { // need to be tested
-    
+
     Route::post('', [cart::class, 'store'])->name('store');
+
+    Route::get('/{category}',[category::class,'showInfo'])->name('admin.show');
     //1-receives the id of the category, delete it
     Route::delete('{category}', [category::class, 'destroy'])->name('destroy');
     //2-receives the id of the category and a json file with updated info, updates the category
