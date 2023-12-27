@@ -65,7 +65,8 @@ class MedicineController extends Controller
         return (new MedicineResource($medicine))->additional($message);
     }
 
-    public function showInfo(Medicine $medicine){
+    public function showInfo($medicine){
+        $medicine = Medicine::with('category')->find($medicine);
         return response()->json([
             'message'=>'medicine info returned succesffully',
             'medicine' => $medicine

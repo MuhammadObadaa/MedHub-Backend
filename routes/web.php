@@ -26,3 +26,4 @@ Route::post('/login', [auth::class, 'login'])->name('login');
 Route::delete('medicines/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
 
 //Route::get('/test/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}', [Reports::class, 'pdfAdminReport'])->name('admin.pdf');
+Route::get('medicine/{medicine}',[MedicineController::class,'showInfo'])->name('admin.show');
