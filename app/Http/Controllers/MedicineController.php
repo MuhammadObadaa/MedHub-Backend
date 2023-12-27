@@ -51,7 +51,7 @@ class MedicineController extends Controller
     //list function is used by the pharmacist to browse all the medicines in general, with no specific category
     public function list()
     {
-        $medicines = Medicine::OrderBy('popularity', 'DESC')->where('available',1)->get();
+        $medicines = Medicine::OrderBy('popularity', 'DESC')->where('available', 1)->get();
 
         $message = ['message' => 'medicines listed successfully!'];
 
@@ -66,24 +66,24 @@ class MedicineController extends Controller
         return (new MedicineResource($medicine))->additional($message);
     }
 
-    public function showInfo($medicine){
-        $medicine = Medicine::with('category')->find(1);
+    public function showInfo($medicine)
+    {
+        $medicine = Medicine::with('category')->find($medicine);
         return response()->json([
-            'message'=>'medicine info returned succesffully',
-            'medicine' => $medicine
+            'medicine' => $medicine,
+            'message' => 'medicine info returned successfully'
         ]);
     }
 
     public function destroy(Medicine $medicine)
     {
-        if($medicine->popularity == 0){
+        if ($medicine->popularity == 0) {
             Storage::disk('public')->delete($medicine->image);
             $medicine->delete();
             return response()->json([
                 'message' => 'medicine deleted successfully!'
             ]);
-        }
-        else{
+        } else {
             $medicine->available = 0;
             $medicine->save();
             return response()->json([
@@ -134,7 +134,7 @@ class MedicineController extends Controller
     //returns top 10 medicines
     public function top10()
     {
-        $medicines = Medicine::OrderBy('popularity', 'DESC')->where('available',1)->take(10)->get();
+        $medicines = Medicine::OrderBy('popularity', 'DESC')->where('available', 1)->take(10)->get();
         $message = ['message' => 'top 10 medicines displayed successfully!'];
         return (new MedicineCollection($medicines))->additional($message);
     }
@@ -142,7 +142,7 @@ class MedicineController extends Controller
     //returns recent 10 medicines
     public function recent10()
     {
-        $medicines = Medicine::latest()->where('available',1)->take(10)->get();
+        $medicines = Medicine::latest()->where('available', 1)->take(10)->get();
         $message = [
             'message' => 'recent 10 medicines displayed successfully!'
         ];
