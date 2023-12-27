@@ -1,0 +1,91 @@
+        * {
+
+            font-family: 'Franklin Gothic Medium',
+                'Arial Narrow',
+                Arial,
+                sans-serif;
+        }
+
+        img {
+            border-radius: 50%;
+        }
+
+        .element {
+            font-size: 25px;
+            margin-top: 15px;
+        }
+
+        div.key {
+            display: inline;
+            color: rgb(0, 57, 110);
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .w-half {
+            width: 40%;
+            text-align: center;
+        }
+
+        .margin-top {
+            margin-top: .1rem;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 1rem;
+            margin-top: 4rem;
+        }
+
+        hr {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        caption.key {
+            margin-top: 30px;
+            text-align: center;
+            color: rgb(0, 57, 110);
+        }
+
+        table {
+            width: 100%;
+        }
+
+        table.table {
+            font-size: 1rem;
+            margin-top: 20px;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        table.table tr {
+            text-align: center;
+            border: 0.5px solid black;
+            background-color: rgb(42, 163, 207);
+        }
+
+        table.table th {
+            color: #ffffff;
+            border: 0.5px solid black;
+            padding: 0.5rem;
+        }
+
+        table tr.items {
+            border: 0.5px solid black;
+            background-color: rgb(241 245 249);
+        }
+
+        table tr.items td {
+            border: 0.5px solid black;
+            padding: 0.5rem;
+        }
+
+        .total {
+            text-align: right;
+            margin-top: 1rem;
+            margin-right: 1rem;
+            font-size: 0.875rem;
+        }

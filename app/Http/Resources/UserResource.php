@@ -17,16 +17,16 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         $report = Route::is('admin.report');
-        $stat = Route::is('admin.stat');
+        $stat = Route::is('admin.stat') || Route::is('admin.pdf');
 
         return [
             "id" => $this->id,
             "name" => $this->name,
             "phoneNumber" => $this->phoneNumber,
             "pharmacyName" => $this->pharmacyName,
-            "pharmacyLocation" => $this->pharmacyLocation,
-            "image" => $this->when(!$stat && !$report,$this->getImageURL()),
-            "all time payment" => $this->when($stat,(int)$this->carts()->sum('bill'))
+            //"pharmacyLocation" => $this->pharmacyLocation,
+            "image" => $this->when(!$stat && !$report, $this->getImageURL()),
+            "all time payment" => $this->when($stat, (int)$this->carts()->sum('bill'))
         ];
         //return parent::toArray($request);
     }

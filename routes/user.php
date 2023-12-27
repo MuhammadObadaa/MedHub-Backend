@@ -35,9 +35,10 @@ Route::group(['prefix' => '/user', 'as' => 'user.'], function () { // tested
     //TODO: password auth
     Route::post('/update', [user::class, 'update'])->name('update');
 
-    Route::get('/stat',[StatisticsController::class,'userStat'])->name('stat');
+    Route::get('/stat', [StatisticsController::class, 'userStat'])->name('stat');
 
-    Route::get('/charts/{year}/{month}',[StatisticsController::class,'userCharts'])->name('charts');
+    Route::get('/charts/{year}/{month}', [StatisticsController::class, 'userCharts'])->name('charts');
 
-    Route::get('/report/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}',[ReportsController::class,'userReport'])->name('report');
+    Route::get('/report/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}', [ReportsController::class, 'userReport'])->name('report');
+    Route::get('/pdf/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}', [ReportsController::class, 'pdfUserReport'])->name('pdf');
 });

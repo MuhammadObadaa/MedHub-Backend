@@ -8,6 +8,7 @@ use App\Http\Middleware\AuthMiddleware;
 use App\Models\Cart;
 use App\Models\Medicine;
 use App\Models\User;
+use App\Http\Controllers\AdminController;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Http\Request;
 
@@ -29,7 +30,7 @@ class CartController extends Controller
 
         foreach ($cartContents as $order) {
             $medicine = Medicine::where('id', $order['id'])->first();
-            $cart->medicines()->attach($medicine->id, ['quantity' => $order['quantity'], 'price' => $medicine->price, 'profit' => $medicine->profit, 'expirationDate'=>$medicine->expirationDate]);
+            $cart->medicines()->attach($medicine->id, ['quantity' => $order['quantity'], 'price' => $medicine->price, 'profit' => $medicine->profit, 'expirationDate' => $medicine->expirationDate]);
             //TODO: is it better to get medicine price from Medicine method or keep it as this?
             //if it works don't touch it :)
             $bill += $order['quantity'] * $medicine->price;
@@ -37,6 +38,8 @@ class CartController extends Controller
         }
 
         $cart->update(['bill' => $bill, 'profit' => $profit]);
+
+        AdminController::notify($user->FCMToken, 'Cart added successfully!');
 
         return response()->json(['message' => 'Cart added successfully!']);
     }
