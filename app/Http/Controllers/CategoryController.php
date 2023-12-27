@@ -23,6 +23,13 @@ class CategoryController extends Controller
         return MedicineResource::collection($medicines)->additional($message);
     }
 
+    public function showInfo(Category $category){
+        return response()->json([
+            'message'=>'category returned successfully!',
+            'category' => $category
+        ]);
+    }
+
     //used by the storeMan to create a category
     public function store()
     {

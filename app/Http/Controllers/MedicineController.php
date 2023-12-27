@@ -6,6 +6,7 @@ use App\Http\Resources\CategoryResource;
 use App\Http\Resources\MedicineResource;
 use App\Http\Resources\MedicineCollection;
 use App\Http\Middleware\AuthMiddleware;
+use App\Http\Resources\CartResource;
 use App\Models\Category;
 use App\Models\Medicine;
 use App\Models\User;
@@ -66,7 +67,7 @@ class MedicineController extends Controller
     }
 
     public function showInfo($medicine){
-        $medicine = Medicine::with('category')->find($medicine);
+        $medicine = Medicine::with('category')->find(1);
         return response()->json([
             'message'=>'medicine info returned succesffully',
             'medicine' => $medicine
