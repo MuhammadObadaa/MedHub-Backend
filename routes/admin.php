@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => '/medicines/', 'as' => 'medicines.'], function () { // need to tested
     //1-receives a json file with all medicine attributes, image is not manditory.
     Route::post('', [medicine::class, 'store'])->name('store');
+
+    Route::get('{medicine}',[medicine::class,'showInfo'])->name('admin.show');
     //2-receives the id of the medicine in the url, delete the medicine from the database
     Route::delete('{medicine}', [medicine::class, 'destroy'])->name('destroy');
     //3-receive a json file, with updated medicine attributes, and the id in the url, updates the medicine
@@ -24,6 +26,7 @@ Route::group(['prefix' => '/users/', 'as' => 'users.'], function () {
 });
 
 Route::group(['prefix' => '/categories/', 'as' => 'categories.'], function () { // need to be tested
+    
     Route::post('', [cart::class, 'store'])->name('store');
     //1-receives the id of the category, delete it
     Route::delete('{category}', [category::class, 'destroy'])->name('destroy');

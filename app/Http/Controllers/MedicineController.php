@@ -65,7 +65,12 @@ class MedicineController extends Controller
         return (new MedicineResource($medicine))->additional($message);
     }
 
-
+    public function showInfo(Medicine $medicine){
+        return response()->json([
+            'message'=>'medicine info returned succesffully',
+            'medicine' => $medicine
+        ]);
+    }
 
     public function destroy(Medicine $medicine)
     {
