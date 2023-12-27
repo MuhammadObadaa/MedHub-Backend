@@ -13,7 +13,7 @@ Route::group(['prefix' => '/medicines/', 'as' => 'medicines.'], function () { //
     //1-receives a json file with all medicine attributes, image is not manditory.
     Route::post('', [medicine::class, 'store'])->name('store');
 
-    Route::get('{medicine}',[medicine::class,'showInfo'])->name('admin.show');
+    Route::get('{medicine}',[medicine::class,'showInfo'])->name('show');
     //2-receives the id of the medicine in the url, delete the medicine from the database
     Route::delete('{medicine}', [medicine::class, 'destroy'])->name('destroy');
     //3-receive a json file, with updated medicine attributes, and the id in the url, updates the medicine
