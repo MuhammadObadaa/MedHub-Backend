@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController as auth;
-use App\Http\Controllers\AdminController as admin;
+use App\Http\Controllers\ReportsController as Reports;
+use App\Http\Controllers\MedicineController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,5 +23,7 @@ Route::get('/', function () {
 //---- Authentication Routes
 Route::post('/register', [auth::class, 'store'])->name('register');
 Route::post('/login', [auth::class, 'login'])->name('login');
+Route::delete('medicines/{medicine}', [MedicineController::class, 'destroy'])->name('destroy');
 
-Route::get('/test', [admin::class, 'test']);
+//Route::get('/test/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}', [Reports::class, 'pdfAdminReport'])->name('admin.pdf');
+Route::get('medicine/{medicine}',[MedicineController::class,'showInfo'])->name('admin.show');

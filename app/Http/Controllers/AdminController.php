@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Cart;
 
 class AdminController extends Controller
@@ -15,7 +16,7 @@ class AdminController extends Controller
      * @param $to user firebase token
      * @param $message the message of notification
      */
-    private function notify(string $to, string $message)
+    public static function notify(string $to, string $message)
     {
         $FCMTitle = "MedHub";
         $FCMApiRoute = 'https://fcm.googleapis.com/fcm/send';
@@ -38,7 +39,6 @@ class AdminController extends Controller
 
         return $response;
     }
-
     private function test()
     {
         //return $this->notify("f9znK07KScizyrb7GbAsD1:APA91bH0YAHw8wPmI0_eWnLgHthLrYsPezNso7PjhlunIBHRuD1OyOPc7oN7aqNHi1E5RIPN2HApzsaw_KSLmPOxOs6S70Ip3r33GDo-lzfk3fcKOY8K9xeJYj1EtFtL5bdvZv4Nq6w7", 'something');
@@ -89,12 +89,14 @@ class AdminController extends Controller
     {
         $cart = Cart::where('id', $cart)->first();
 
-        $cart->payed = 1;
+        //TODO: what's the difference?
+        //$cart->update(['payed', 1]);
+        $cart->payed = true;
         $cart->save();
 
-        $this->notify($cart->user()->FCMToken, 'cart ' . $cart->id . ' has been payed');
+        AdminController::notify($cart->user()->FCMToken, 'cart ' . $cart->id . ' has been payed');
 
-        return response()->json(['message' => 'the order '.$cart->id.' was payed successfully!'], 200);
+        return response()->json(['message' => 'the order ' . $cart->id . ' was payed successfully!'], 200);
     }
 
     //update function is used by the storeMan to update the status of the orders or the payment status
@@ -153,38 +155,39 @@ class AdminController extends Controller
             $medicines = $cart->medicines;
             $noQuantity = true;
             foreach ($medicines as $medicine) {
-                if ($medicine->quantity != 0) {
+                if ($medicine->available && $medicine->quantity != 0) {
                     $noQuantity = false;
                     break;
                 }
             }
             if ($noQuantity) {
                 $cart->update(['status' => 'refused']);
-                $this->notify($cart->user()->FCMToken, 'order ' . $cart->id . ' has been refused, all medicines you ordered are out of stock, sorry for inconvenience');
+                AdminController::notify($cart->user()->FCMToken, 'order ' . $cart->id . ' has been refused, all medicines you ordered are out of stock, sorry for inconvenience');
                 return response()->json([
                     'message' => 'all medicines you ordered are out of stock, sorry for inconvenience',
                 ], 409);
-
             }
             foreach ($medicines as $medicine) {
-                if ($medicine->quantity != 0) {
+                if ($medicine->available && $medicine->quantity != 0) {
                     if ($medicine->quantity < $medicine->pivot->quantity) {
                         $billUpdate += (($medicine->pivot->quantity - $medicine->quantity) * $medicine->pivot->price);
                         $profitUpdate += (($medicine->pivot->quantity - $medicine->quantity) * $medicine->pivot->profit);
                         $medicine->pivot->quantity = $medicine->quantity;
                         $medicine->quantity = 0;
+                        $medicine->popularity = $medicine->popularity + 2 * $medicine->pivot->quantity;
                         $medicine->save();
                         $medicine->pivot->save();
-                        $this->notify($cart->user()->FCMToken, 'in order ' . $cart->id .' the available quantity of ' . $medicine->name . ' does not meet the your need, we have limited the quantity to ' . $medicine->pivot->quantity);
+                        AdminController::notify($cart->user()->FCMToken, 'in order ' . $cart->id . ' the available quantity of ' . $medicine->name . ' does not meet the your need, we have limited the quantity to ' . $medicine->pivot->quantity);
                     } else {
                         $medicine->quantity = $medicine->quantity - $medicine->pivot->quantity;
+                        $medicine->popularity = $medicine->popularity + 2 * $medicine->pivot->quantity;
                         $medicine->save();
                     }
                 } else {
                     $billUpdate += ($medicine->pivot->quantity * $medicine->pivot->price);
                     $profitUpdate += ($medicine->pivot->quantity * $medicine->pivot->profit);
                     $cart->medicines()->detach($medicine);
-                    $this->notify($cart->user()->FCMToken, 'in order ' . $cart->id . ' medicine '. $medicine->name . ' is out of stock, we have removed it from your order');
+                    AdminController::notify($cart->user()->FCMToken, 'in order ' . $cart->id . ' medicine ' . $medicine->name . ' is out of stock, we have removed it from your order');
                 }
             }
             $cart->update([
@@ -205,7 +208,7 @@ class AdminController extends Controller
 
         $message = "status of order has been updated successfully!";
         $cart->update(["status" => request()->get('status')]);
-        $this->notify($cart->user()->FCMToken, 'order ' . $cart->id . ' is '.$cart->status);
+        AdminController::notify($cart->user()->FCMToken, 'order ' . $cart->id . ' is ' . $cart->status);
         //TODO: make sure that the user received the cart.
         return response()->json(['message' => $message]);
     }
