@@ -61,4 +61,5 @@ Route::group(['as' => 'admin.'], function () {
     Route::get('/weekcharts/{year}/{week}', [StatisticsController::class, 'adminWeekCharts'])->name('weekcharts');
 
     Route::get('/report/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}', [ReportsController::class, 'adminReport'])->name('report');
+    Route::get('/pdf/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}', [ReportsController::class, 'pdfAdminReport'])->name('pdf');
 });
