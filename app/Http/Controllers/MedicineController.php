@@ -116,12 +116,18 @@ class MedicineController extends Controller
             'profit' => request()->get('profit'),
         ];
 
-        if (request()->get('image') != '') {
-            if ($medicine->image != '') {
-                Storage::disk('public')->delete($medicine->image);
+        $imageFile = '';
+        if (request()->has('image')) {
+            $validatedImage = Validator::make(request()->all(), [
+                'image' => 'image'
+            ]);
+            if (!$validatedImage->fails()) {
+                if ($medicine->image != '') {
+                    Storage::disk('public')->delete($medicine->image);
+                }
+                $imageFile = request()->file('image')->store('app', 'public');
+                $updated['image'] = $imageFile;
             }
-            $imageFile = request()->file('image')->store('app', 'public');
-            $updated['image'] = $imageFile;
         }
 
         $medicine->update($updated);
