@@ -39,7 +39,7 @@ class CartController extends Controller
 
         $cart->update(['bill' => $bill, 'profit' => $profit]);
 
-        AdminController::notify(User::where('is_admin', 1), 'Cart from ' . $user->name . ' added!');
+        AdminController::notify(User::where('is_admin', 1)->first()->FCMToken, 'New order from ' . $user->name . ' was placed!');
 
         return response()->json(['message' => 'Cart added successfully!']);
     }
