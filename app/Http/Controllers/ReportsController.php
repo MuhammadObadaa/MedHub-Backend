@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Middleware\AuthMiddleware;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\CartResource;
 use App\Http\Resources\UserResource;
 use App\Models\Cart;
@@ -121,32 +122,41 @@ class ReportsController extends Controller
     public function pdfAdminReport($year1, $month1, $day1, $year2, $month2, $day2)
     {
         $data = $this->formatAdminReport(
-            $start = Carbon::create($year1, $month1, $day1),
-            $end = Carbon::create($year2, $month2, $day2, 23, 59, 59)
+            Carbon::create($year1, $month1, $day1),
+            Carbon::create($year2, $month2, $day2, 23, 59, 59)
         );
-        $data['user'] = AuthMiddleware::getUser()->name;
+        $admin = AuthMiddleware::getUser();
+        $data['user'] = $admin->name;
+        $id = $admin->id;
+
         $data['payed orders info'] = $data['payed orders info']->toArray(Request());
 
         $pdf = Pdf::loadView('adminReport', ['data' => $data]);
 
+        Storage::put(('public/app/' . $id . 'Report.pdf'), $pdf->download()->getOriginalContent());
+
         //return $pdf->download();
-        return $pdf->stream('AdminReport');
+        //return $pdf->stream('AdminReport');
+        return response()->json(['file' => url('storage/app', ($id . 'Report.pdf'))]);
     }
 
     public function pdfUserReport($year1, $month1, $day1, $year2, $month2, $day2)
     {
         $data = $this->formatUserReport(
-            $start = Carbon::create($year1, $month1, $day1),
-            $end = Carbon::create($year2, $month2, $day2, 23, 59, 59)
+            Carbon::create($year1, $month1, $day1),
+            Carbon::create($year2, $month2, $day2, 23, 59, 59)
         );
-        $data['user'] = AuthMiddleware::getUser()->name;
-        //$data['top users'] = UserResource::toArray(Request());
-        //$data['top medicines'] = $data['top medicines']->toArray();
+        $user = AuthMiddleware::getUser();
+        $data['user'] = $user->name;
+        $id = $user->id;
 
         $pdf = Pdf::loadView('userReport', ['data' => $data]);
 
+        Storage::put('public/app/' . $id . 'Report.pdf', $pdf->download()->getOriginalContent());
+
         //return $pdf->download();
-        return $pdf->stream('UserReport');
+        //return $pdf->stream('UserReport');
+        return response()->json(['file' => url('storage/app', $id . 'Report.pdf')]);
     }
 
     public function adminReport($year1, $month1, $day1, $year2, $month2, $day2)

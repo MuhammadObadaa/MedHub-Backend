@@ -55,7 +55,7 @@ class User extends Authenticatable
     //returns the medicines that the user favored
     public function favors()
     {
-        return $this->belongsToMany(Medicine::class, 'medicine_user', 'user_id', 'medicine_id')->where('available',1)->withTimestamps();
+        return $this->belongsToMany(Medicine::class, 'medicine_user', 'user_id', 'medicine_id')->where('available', 1)->withTimestamps();
     }
     //returns if the user has favored a medicine or not
     public function hasFavored(Medicine $medicine)
@@ -67,6 +67,8 @@ class User extends Authenticatable
     {
         return $this->is_admin;
     }
+
+    //TODO: distribute between user and medicine image
 
     public function getImageURL()
     {

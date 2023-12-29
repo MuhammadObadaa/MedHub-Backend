@@ -29,7 +29,7 @@ Route::group(['prefix' => '/categories/', 'as' => 'categories.'], function () { 
 
     Route::post('', [category::class, 'store'])->name('store');
 
-    Route::get('/{category}', [category::class, 'showInfo'])->name('admin.show');
+    Route::get('/{category}', [category::class, 'showInfo'])->name('show');
     //1-receives the id of the category, delete it
     Route::delete('{category}', [category::class, 'destroy'])->name('destroy');
     //2-receives the id of the category and a json file with updated info, updates the category
@@ -57,7 +57,7 @@ Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () { //tested
     Route::post('{cart}', [admin::class, 'update'])->name('update');
 });
 
-Route::group(['as' => 'admin.'], function () {
+Route::group([],function () {
 
     Route::get('/stat', [StatisticsController::class, 'adminStat'])->name('stat');
 
@@ -66,5 +66,6 @@ Route::group(['as' => 'admin.'], function () {
     Route::get('/weekcharts/{year}/{week}', [StatisticsController::class, 'adminWeekCharts'])->name('weekcharts');
 
     Route::get('/report/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}', [ReportsController::class, 'adminReport'])->name('report');
+    //
     Route::get('/pdf/{year1}/{month1}/{day1}/{year2}/{month2}/{day2}', [ReportsController::class, 'pdfAdminReport'])->name('pdf');
 });

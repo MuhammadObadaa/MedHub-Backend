@@ -99,13 +99,17 @@
                     @foreach ($data['payed orders info'] as $cart)
                         <tr class="items">
                             @foreach ($array as $key)
-                                @if ($key != 'user' && $key != 'phoneNumber')
+                                @if ($key == 'user')
                                     <td>
-                                        {{ $cart[$key] }}
+                                        {{ $cart['user']['name'] }}
+                                    </td>
+                                @elseif($key == 'phoneNumber')
+                                    <td>
+                                        {{ $cart['user']['phoneNumber'] }}
                                     </td>
                                 @else
                                     <td>
-                                        {{ $cart['user']['name'] }}
+                                        {{ $cart[$key] }}
                                     </td>
                                 @endif
                             @endforeach
