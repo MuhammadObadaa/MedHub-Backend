@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
         //$schedule->exec('rm public/storage/app/*.pdf')->everySecond()->appendOutputTo('file.txt');
         $schedule->call(function () {
             File::delete(File::glob('public\storage\app\*.pdf'));
-        })->everyFiveMinutes()->appendOutputTo('file.txt');
+        })->everyFiveMinutes();
     }
 
     /**
