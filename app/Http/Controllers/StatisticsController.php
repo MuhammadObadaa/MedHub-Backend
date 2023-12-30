@@ -201,8 +201,8 @@ class StatisticsController extends Controller
                 $ProfitByMonth['0' . strval($i)] = $ProfitByMonth['0' . (string)$i] ?? 0;
             }
             for ($i = 10; $i < 13; $i++) {
-                $IncomeByMonth[$i] = $IncomeByMonth[$i] ?? 0;
-                $ProfitByMonth[$i] = $ProfitByMonth[$i] ?? 0;
+                $IncomeByMonth[strval($i)] = $IncomeByMonth[strval($i)] ?? 0;
+                $ProfitByMonth[strval($i)] = $ProfitByMonth[strval($i)] ?? 0;
             }
 
             //ksort to sort by key
