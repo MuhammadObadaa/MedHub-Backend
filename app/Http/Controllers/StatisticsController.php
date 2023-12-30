@@ -189,20 +189,27 @@ class StatisticsController extends Controller
                 return $cart->created_at->format('m');
             })->map(function ($group) {
                 return ($group->sum('bill')) / 1000000.0;
-            });
+            })->toArray();
             $ProfitByMonth = $carts->groupBy(function ($cart) {
                 return $cart->created_at->format('m');
             })->map(function ($group) {
                 return ($group->sum('profit')) / 1000000.0;
-            });
+            })->toArray(); // for sort
+
             for ($i = 1; $i < 10; $i++) {
-                $IncomeByMonth['0' . (string)$i] = $IncomeByMonth['0' . (string)$i] ?? 0;
-                $ProfitByMonth['0' . (string)$i] = $ProfitByMonth['0' . (string)$i] ?? 0;
+                $IncomeByMonth['0' . strval($i)] = $IncomeByMonth['0' . (string)$i] ?? 0;
+                $ProfitByMonth['0' . strval($i)] = $ProfitByMonth['0' . (string)$i] ?? 0;
             }
             for ($i = 10; $i < 13; $i++) {
-                $IncomeByMonth[(string)$i] = $IncomeByMonth[(string)$i] ?? 0;
-                $ProfitByMonth[(string)$i] = $ProfitByMonth[(string)$i] ?? 0;
+                $IncomeByMonth[$i] = $IncomeByMonth[$i] ?? 0;
+                $ProfitByMonth[$i] = $ProfitByMonth[$i] ?? 0;
             }
+
+            //ksort to sort by key
+            ksort($IncomeByMonth);
+            ksort($ProfitByMonth);
+
+
             return response()->json([
                 "income" => $IncomeByMonth,
                 "profit" => $ProfitByMonth,
@@ -225,6 +232,8 @@ class StatisticsController extends Controller
                 $IncomeByWeek[(string)$i] = $IncomeByWeek[(string)$i] ?? 0;
                 $ProfitByWeek[(string)$i] = $ProfitByWeek[(string)$i] ?? 0;
             }
+
+
             return response()->json([
                 "income" => $IncomeByWeek,
                 "profit" => $ProfitByWeek,
