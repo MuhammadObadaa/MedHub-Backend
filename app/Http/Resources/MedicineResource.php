@@ -32,7 +32,7 @@ class MedicineResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $arabicLang = $request->hasHeader('lang') && $request->header('lang') == 'ar';
+        $arabicLang = $request->hasHeader('lang') && $request->header('lang') == 'ar' && !Route::is('*.pdf');
         $report = (Route::is('admin.report') || Route::is('user.report'));
         $stat = (Route::is('admin.stat') || Route::is('user.stat'));
 

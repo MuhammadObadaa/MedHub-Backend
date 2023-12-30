@@ -111,7 +111,7 @@ class StatisticsController extends Controller
         //another way to some pivot attributes in laravel, look totalMed in userStat
         $soldMedicines = Cart::where('payed', 1)->join('cart_medicine', 'id', '=', 'cart_medicine.cart_id')->sum('quantity');
         $inStockMedicines = Medicine::where('quantity', '!=', 0)->where('expirationDate', '>', now())->count();
-        $inStockQuantity = Medicine::where('quantity', '!=', 0)->where('expirationDate', '>', now())->sum('quantity');
+        $inStockQuantity = Medicine::where('expirationDate', '>', now())->sum('quantity');
 
         //orderBy takes a function that sums the bill column from the carts table and it only takes the carts of the user by joining the tables with whereColumn
         $topUsers = UserResource::collection(User::orderBy(function ($query) {
@@ -138,7 +138,7 @@ class StatisticsController extends Controller
         foreach ($cats as $cat) {
             if ($ar) $name = $cat->ar_name;
             else $name = $cat->name;
-            $inStockCategoriesPercentages[$name] = (float) number_format((100 * $cat->medicines()->where('quantity', '!=', 0)->where('expirationDate', '>', now())->count()) / $inStockMedicines, 2);
+            $inStockCategoriesPercentages[$name] = (float) number_format((100 * $cat->medicines()->where('expirationDate', '>', now())->sum('quantity')) / $inStockQuantity, 2);
             if ($inStockCategoriesPercentages[$name] == 0) unset($inStockCategoriesPercentages[$name]);
         }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoryResource extends JsonResource
@@ -22,7 +23,7 @@ class CategoryResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-        $arabicLang = $request->hasHeader('lang') && $request->header('lang') == 'ar';
+        $arabicLang = $request->hasHeader('lang') && $request->header('lang') == 'ar' && !Route::is('*.pdf');
         return [
             'id' => $this->id,
             'name' => $this->when($arabicLang, $this->ar_name, $this->name),

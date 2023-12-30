@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 class CartController extends Controller
 {
 
+    //TODO: pagination
     //TODO: must design notifications table with status code for every order sent
 
     //storing the cart in the database
