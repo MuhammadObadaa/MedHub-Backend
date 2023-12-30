@@ -51,6 +51,9 @@
                 <div class = 'element'>
                     <div class = 'key'> {{ $key }} :</div>
                     {{ $item }}
+                    @if ($key == 'total income' || $key == 'total profit')
+                        S.P
+                    @endif
                 </div>
             @endif
         @endforeach
@@ -107,6 +110,10 @@
                                     <td>
                                         {{ $cart['user']['phoneNumber'] }}
                                     </td>
+                                @elseif($key == 'bill' || $key == 'profit')
+                                    <td>
+                                        {{ $cart[$key] . ' S.P' }}
+                                    </td>
                                 @else
                                     <td>
                                         {{ $cart[$key] }}
@@ -142,7 +149,7 @@
                                 {{ $category }}
                             </td>
                             <td>
-                                {{ $value }}
+                                {{ $value . '%' }}
                             </td>
                         </tr>
                     @endforeach
@@ -170,7 +177,7 @@
                                 {{ $category }}
                             </td>
                             <td>
-                                {{ $value }}
+                                {{ $value . ' S.P' }}
                             </td>
                         </tr>
                     @endforeach
@@ -198,7 +205,7 @@
                                 {{ $category }}
                             </td>
                             <td>
-                                {{ $value }}
+                                {{ $value . '%' }}
                             </td>
                         </tr>
                     @endforeach

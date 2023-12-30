@@ -40,7 +40,7 @@
                     <div class = 'key'> {{ $key }} :</div>
                     {{ $item }}
                     @if ($key === 'total payment')
-                        SP
+                        S.P
                     @endif
                 </div>
             @endif
@@ -66,7 +66,7 @@
                                 {{ $category }}
                             </td>
                             <td>
-                                {{ $value }}
+                                {{ $value . ' S.P' }}
                             </td>
                         </tr>
                     @endforeach
@@ -74,7 +74,7 @@
             </div>
         </div>
 
-        {{-- Joined users info --}}
+        {{-- Carts details --}}
         <div class = 'element table'>
             <caption class = 'key'>Carts details:</caption>
 
@@ -90,17 +90,15 @@
                     </tr>
                     @foreach ($data['carts'] as $user)
                         <tr class="items">
-                            @foreach ($array as $key)
-                                @if ($key != 'payment_status')
-                                    <td>
-                                        {{ $user[$key] }}
-                                    </td>
-                                @else
-                                    <td>
-                                        {{ $user[$key] }}
-                                    </td>
-                                @endif
-                            @endforeach
+                            <td>
+                                {{ $user['id'] }}
+                            </td>
+                            <td>
+                                {{ $user['payment_status'] }}
+                            </td>
+                            <td>
+                                {{ $user['bill'] . ' S.P' }}
+                            </td>
                         </tr>
                     @endforeach
                 </table>

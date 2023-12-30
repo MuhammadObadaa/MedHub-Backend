@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Middleware\AuthMiddleware;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\CartResource;
 use App\Http\Resources\UserResource;
@@ -127,17 +128,18 @@ class ReportsController extends Controller
         );
         $admin = AuthMiddleware::getUser();
         $data['user'] = $admin->name;
-        $id = $admin->id;
+
+        $fileName = 'MedHub' . date('Y-m-d') . 'ReportToAdmin' . $admin->id . '.pdf';
 
         $data['payed orders info'] = $data['payed orders info']->toArray(Request());
 
         $pdf = Pdf::loadView('adminReport', ['data' => $data]);
 
-        Storage::put(('public/app/' . $id . 'Report.pdf'), $pdf->download()->getOriginalContent());
+        Storage::put(('public/app/' . $fileName), $pdf->download()->getOriginalContent());
 
         //return $pdf->download();
         //return $pdf->stream('AdminReport');
-        return response()->json(['file' => url('storage/app', ($id . 'Report.pdf'))]);
+        return response()->json(['file' => url('storage/app', $fileName)]);
     }
 
     public function pdfUserReport($year1, $month1, $day1, $year2, $month2, $day2)
@@ -146,24 +148,24 @@ class ReportsController extends Controller
             Carbon::create($year1, $month1, $day1),
             Carbon::create($year2, $month2, $day2, 23, 59, 59)
         );
+
         $user = AuthMiddleware::getUser();
         $data['user'] = $user->name;
-        $id = $user->id;
+
+        $fileName = 'MedHub' . date('Y-m-d') . 'ReportToUser' . $user->id . '.pdf';
 
         $pdf = Pdf::loadView('userReport', ['data' => $data]);
 
-        Storage::put('public/app/' . $id . 'Report.pdf', $pdf->download()->getOriginalContent());
+        Storage::put('public/app/' . $fileName, $pdf->download()->getOriginalContent());
 
-        //return $pdf->download();
-        //return $pdf->stream('UserReport');
-        return response()->json(['file' => url('storage/app', $id . 'Report.pdf')]);
+        return response()->json(['file' => url('storage/app', $fileName)]);
     }
 
     public function adminReport($year1, $month1, $day1, $year2, $month2, $day2)
     {
         $data = $this->formatAdminReport(
-            $start = Carbon::create($year1, $month1, $day1),
-            $end = Carbon::create($year2, $month2, $day2, 23, 59, 59)
+            Carbon::create($year1, $month1, $day1),
+            Carbon::create($year2, $month2, $day2, 23, 59, 59)
         );
 
         $data['message'] = 'report returned successfully!';
@@ -174,8 +176,8 @@ class ReportsController extends Controller
     public function userReport($year1, $month1, $day1, $year2, $month2, $day2)
     {
         $data = $this->formatUserReport(
-            $start = Carbon::create($year1, $month1, $day1),
-            $end = Carbon::create($year2, $month2, $day2, 23, 59, 59)
+            Carbon::create($year1, $month1, $day1),
+            Carbon::create($year2, $month2, $day2, 23, 59, 59)
         );
 
         $data['message'] = 'report returned successfully!';
