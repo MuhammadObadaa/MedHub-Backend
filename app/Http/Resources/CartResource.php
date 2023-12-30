@@ -28,7 +28,7 @@ class CartResource extends JsonResource
     public function toArray(Request $request): array
     {
         $report = (Route::is('admin.report') || Route::is('user.report')) || Route::is('admin.pdf');
-        $carts = Route::is('carts.show') || Route::is('carts.list.*');
+        $carts = Route::is('carts.show') || Route::is('*carts.list*');
         return
             [
                 'id' => $this->id,

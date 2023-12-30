@@ -103,6 +103,7 @@ class StatisticsController extends Controller
 
         $userCnt = User::count();
         $ordersCnt = Cart::count();
+        $totalIncome = Cart::where('payed', 1)->sum('bill');
         $inPreparationOrders = Cart::where('status', 'in preparation')->count();
         $gettingDeliveredOrders = Cart::where('status', 'getting delivered')->count();
         $deliveredOrders = Cart::where('status', 'delivered')->count();
@@ -156,10 +157,6 @@ class StatisticsController extends Controller
             $percentage = (float) number_format(($percentage * 100.0) / $soldMedicines, 2);
         }
 
-        //for pdf report:
-        //$topUsers = $topUsers->toArray(Request());
-        //$topMedicines = $topMedicines->toArray(Request());
-
         $data = [
             'users count' => $userCnt,
             'orders count' => $ordersCnt,
@@ -170,6 +167,8 @@ class StatisticsController extends Controller
             'sold medicines count' => (int) $soldMedicines,
             'in stock medicines' => $inStockMedicines,
             'in stock medicines quantity' => (int) $inStockQuantity,
+            'total income' => (int)$totalIncome,
+
             'top users' => $topUsers,
             'top medicines' => $topMedicines,
             'top companies' => $topCompanies,
