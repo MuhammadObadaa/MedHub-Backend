@@ -217,20 +217,20 @@ class StatisticsController extends Controller
             ]);
         } else {
             $carts = Cart::whereYear('created_at', $year)->whereMonth('created_at', $month)->where('payed', 1)->get();
-            $IncomeByWeek = $carts->groupBy(function ($cart) {
+            $IncomeWeekSample = $carts->groupBy(function ($cart) {
                 return $cart->created_at->weekOfMonth;
             })->map(function ($group) {
                 return ($group->sum('bill')) / 1000000.0;
             });
-            $ProfitByWeek = $carts->groupBy(function ($cart) {
+            $ProfitWeekSample = $carts->groupBy(function ($cart) {
                 return $cart->created_at->weekOfMonth;
             })->map(function ($group) {
                 return ($group->sum('profit')) / 1000000.0;
             });
 
             for ($i = 1; $i < 5; $i++) {
-                $IncomeByWeek[(string)$i] = $IncomeByWeek[(string)$i] ?? 0;
-                $ProfitByWeek[(string)$i] = $ProfitByWeek[(string)$i] ?? 0;
+                $IncomeByWeek[(string)$i] = $IncomeWeekSample[(string)$i] ?? 0;
+                $ProfitByWeek[(string)$i] = $ProfitWeekSample[(string)$i] ?? 0;
             }
 
 

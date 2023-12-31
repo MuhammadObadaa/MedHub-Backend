@@ -10,6 +10,7 @@ use App\Models\Cart;
 class AdminController extends Controller
 {
     //TODO: whats the best practice of setting routes position?
+    //TODO: make FCMProjectKey in the .env file
 
     //https://youtube.com/playlist?list=PLuBL2DYgVDm2HktOlxMTqDn5zGZh1P_Gf&si=AXCuMdxSnyhpTILO
     /**

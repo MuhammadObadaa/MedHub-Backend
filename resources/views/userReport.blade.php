@@ -94,7 +94,7 @@
                                 {{ $user['id'] }}
                             </td>
                             <td>
-                                {{ $user['payment_status'] }}
+                                {{ $user['status'] }}
                             </td>
                             <td>
                                 {{ $user['bill'] . ' S.P' }}
