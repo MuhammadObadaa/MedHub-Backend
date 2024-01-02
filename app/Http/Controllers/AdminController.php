@@ -86,26 +86,29 @@ class AdminController extends Controller
         return $result;
     }
 
-    public function pay($cart)
+    public function pay(Cart $cart)
     {
-        $cart = Cart::where('id', $cart)->first();
+        $lang = $this->lang();
 
         //TODO: what's the difference?
         //$cart->update(['payed', 1]);
         $cart->payed = true;
         $cart->save();
 
-        AdminController::notify($cart->user()->FCMToken, 'cart ' . $cart->id . ' has been payed');
+        $message['ar'] = ' تم دفع الطلبية رقم ' . $cart->id;
+        $message['en'] = 'the order ' . $cart->id . ' has been payed successfully!';
 
-        return response()->json(['message' => 'the order ' . $cart->id . ' was payed successfully!'], 200);
+        AdminController::notify($cart->user()->FCMToken, $message[$lang]);
+
+        return response()->json(['message' => $message[$lang]]);
     }
 
     //update function is used by the storeMan to update the status of the orders or the payment status
     //the order of the status of the order must be handled carefully by the front end
-    public function update($cart)
+    public function update(Cart $cart)
     {
-        //TODO: why my route binding does'nt work :)
-        $cart = Cart::where('id', $cart)->first();
+        $lang = $this->lang();
+        //$cart = Cart::where('id', $cart)->first();
         //unreachable if statement if handled correctly by front end
         /* $flag = false;
         if(request()->has('status') && ($cart->status == 'refused' || $cart->status == 'delivered')){
@@ -163,9 +166,13 @@ class AdminController extends Controller
             }
             if ($noQuantity) {
                 $cart->update(['status' => 'refused']);
-                AdminController::notify($cart->user()->FCMToken, 'order ' . $cart->id . ' has been refused, all medicines you ordered are out of stock, sorry for inconvenience');
+                $message['ar'] = 'تم رفض الطلبية رقم ' . $cart->id . ' نظرا لعدم توافر أي دواء مطلوب';
+                $message['en'] = 'order ' . $cart->id . ' has been refused, all medicines you ordered are out of stock';
+
+                AdminController::notify($cart->user()->FCMToken, $message[$lang]);
+
                 return response()->json([
-                    'message' => 'all medicines you ordered are out of stock, sorry for inconvenience',
+                    'message' => $message[$lang],
                 ], 409);
             }
             foreach ($medicines as $medicine) {
@@ -178,7 +185,11 @@ class AdminController extends Controller
                         $medicine->popularity = $medicine->popularity + 2 * $medicine->pivot->quantity;
                         $medicine->save();
                         $medicine->pivot->save();
-                        AdminController::notify($cart->user()->FCMToken, 'in order ' . $cart->id . ' the available quantity of ' . $medicine->name . ' does not meet the your need, we have limited the quantity to ' . $medicine->pivot->quantity);
+
+                        $message['ar'] = 'في الطلبية رقم ' . $cart->id . ' الكمية المتوفرة من الدواء ' . $medicine->ar_name . ' لا تغطي احتياجك.. تم تعديل الكمية لتصبح ' . $medicine->pivot->quantity;
+                        $message['en'] = 'in order ' . $cart->id . ' the available quantity of ' . $medicine->name . ' does not meet your need, we have limited the quantity to ' . $medicine->pivot->quantity;
+
+                        AdminController::notify($cart->user()->FCMToken, $message[$lang]);
                     } else {
                         $medicine->quantity = $medicine->quantity - $medicine->pivot->quantity;
                         $medicine->popularity = $medicine->popularity + 2 * $medicine->pivot->quantity;
@@ -188,7 +199,11 @@ class AdminController extends Controller
                     $billUpdate += ($medicine->pivot->quantity * $medicine->pivot->price);
                     $profitUpdate += ($medicine->pivot->quantity * $medicine->pivot->profit);
                     $cart->medicines()->detach($medicine);
-                    AdminController::notify($cart->user()->FCMToken, 'in order ' . $cart->id . ' medicine ' . $medicine->name . ' is out of stock, we have removed it from your order');
+
+                    $message['ar'] = 'في الطلبية رقم ' . $cart->id . 'الدواء ' . $medicine->ar_name . ' غير متوفر لدينا. تم استبعاده من الطلبية';
+                    $message['en'] = 'in order ' . $cart->id . ' medicine ' . $medicine->name . ' is out of stock, we have removed it from your order';
+
+                    AdminController::notify($cart->user()->FCMToken, $message[$lang]);
                 }
             }
             $cart->update([
@@ -201,16 +216,21 @@ class AdminController extends Controller
 
         if (request()->get('status') == "delivered") {
             if ($cart->payed == false) {
+                $message['ar'] = 'لا يمكن توصيل الطلبية بدون دفع!';
+                $message['ar'] = 'cannot deliver the order without payment!';
                 return response()->json([
-                    'message' => 'cannot deliver the order without payment!'
+                    'message' => $message[$lang]
                 ], 402 /* payment required */);
             }
         }
 
-        $message = "status of order has been updated successfully!";
         $cart->update(["status" => request()->get('status')]);
-        AdminController::notify($cart->user()->FCMToken, 'order ' . $cart->id . ' is ' . $cart->status);
+
+        $message['ar'] = 'تم تغيير حالة الطلبية رقم ' . $cart->id . ' إلى' . $cart->status . ' بنجاح';
+        $message['en'] = 'status of order ' . $cart->id . ' has been updated to ' . $cart->status . ' successfully!';
+        AdminController::notify($cart->user()->FCMToken, $message[$lang]);
+
         //TODO: make sure that the user received the cart.
-        return response()->json(['message' => $message]);
+        return response()->json(['message' => $message[$lang]]);
     }
 }

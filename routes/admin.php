@@ -57,7 +57,7 @@ Route::group(['prefix' => '/carts/', 'as' => 'carts.'], function () { //tested
     Route::post('{cart}', [admin::class, 'update'])->name('update');
 });
 
-Route::group([],function () {
+Route::group([], function () {
 
     Route::get('/stat', [StatisticsController::class, 'adminStat'])->name('stat');
 

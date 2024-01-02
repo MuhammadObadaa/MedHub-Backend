@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\File;
 use App\Models\Cart;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
-use Exception;
 
 class UserController extends Controller
 {
@@ -90,7 +89,7 @@ class UserController extends Controller
             //     File::delete($user->image);
             if ($user->image != null)
                 Storage::disk('public')->delete($user->image);
-                $user->update(['image' => $imageFile]);
+            $user->update(['image' => $imageFile]);
         }
 
         return response()->json(['message' => 'Changes applied successfully!']);

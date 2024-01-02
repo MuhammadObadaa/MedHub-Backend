@@ -28,6 +28,7 @@ class AuthController extends Controller
     */
     public function store()
     {
+        $lang = $this->lang();
         $imageFile = '';
 
         if (request()->has('image')) {
@@ -38,8 +39,11 @@ class AuthController extends Controller
                 $imageFile = request()->file('image')->store('app', 'public');
         }
 
-        if (User::where('phoneNumber', request('phoneNumber'))->first())
-            return response()->json(['message' => 'This phone number already exist'], 400);
+        if (User::where('phoneNumber', request('phoneNumber'))->first()) {
+            $message['ar'] = 'هذا الرقم متوفر مسبقا';
+            $message['en'] = 'This phone number already exist';
+            return response()->json(['message' => $message[$lang]], 400);
+        }
 
         //TODO: handle the exceptions with connection to DB
         $user = User::create([
@@ -55,13 +59,19 @@ class AuthController extends Controller
 
     public function login()
     {
+        $lang = $this->lang();
         $user = User::where('phoneNumber', request('phoneNumber'))->first();
 
-
-        if (!$user)
-            return response()->json(['message' => 'No such phoneNumber'], 400);
-        if (!Hash::check(request('password'), $user->password))
-            return response()->json(['message' => 'Wrong Password!'], 400);
+        if (!$user) {
+            $message['ar'] = 'لا يوجد هكذا رقم';
+            $message['en'] = 'No such phoneNumber';
+            return response()->json(['message' => $message[$lang]], 400);
+        }
+        if (!Hash::check(request('password'), $user->password)) {
+            $message['ar'] = 'كلمة السر خاطئة';
+            $message['en'] = 'Wrong Password!';
+            return response()->json(['message' => $message[$lang]], 400);
+        }
 
         //TODO: make rememberMe optional
         //TODO: No need to send the rememberMe option to the login. where we already create our own token in the cookie
@@ -69,8 +79,7 @@ class AuthController extends Controller
         Auth::login($user, TRUE); // without true .. there is no remember_me value which is the token for our system
         //Auth::attempt()
 
-        if(request()->hasHeader('FCMToken'))
-        {
+        if (request()->hasHeader('FCMToken')) {
             $user->FCMToken = request()->header('FCMToken');
             $user->save();
         }
@@ -81,13 +90,17 @@ class AuthController extends Controller
         //     dump(request()->cookie('token'));
         // }
 
-        return response()->json(['message' => 'Logged in successfully', 'token' => $user->remember_token])
-            ->withCookie(Cookie()->forever('token', $user->remember_token))
-            ->header("ngrok-skip-browser-warning", "69420"); //for ngrok
+        $message['ar'] = 'تم تسجيل الدخول بنجاح';
+        $message['en'] = 'Logged in successfully';
+
+        return response()->json(['message' => $message[$lang], 'token' => $user->remember_token])
+            ->withCookie(Cookie()->forever('token', $user->remember_token));
+        //->header("ngrok-skip-browser-warning", "69420"); //for ngrok
     }
 
     public function logout()
     {
+        $lang = $this->lang();
         // to forget the token and cookies then logout
         $user = AuthMiddleware::getUser();
 
@@ -102,6 +115,9 @@ class AuthController extends Controller
         } catch (Exception $e) {
         }
 
-        return response()->json(['message' => 'Logged out successfully']);
+        $message['ar'] = 'تم تسجيل الخروج بنجاح';
+        $message['en'] = 'Logged out successfully';
+
+        return response()->json(['message' => $message[$lang]]);
     }
 }

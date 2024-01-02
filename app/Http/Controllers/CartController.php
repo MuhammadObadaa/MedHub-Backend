@@ -21,6 +21,7 @@ class CartController extends Controller
     //storing the cart in the database
     public function store()
     {
+        $lang = $this->lang();
         $user = AuthMiddleware::getUser();
         $bill = 0;
         $profit = 0;
@@ -40,66 +41,117 @@ class CartController extends Controller
 
         $cart->update(['bill' => $bill, 'profit' => $profit]);
 
-        AdminController::notify(User::where('is_admin', 1)->first()->FCMToken, 'New order from ' . $user->name . ' was placed!');
+        $message['ar'] = 'تم طلب طلبية جديدة من الصيدلاني ' . $user->name;
+        $message['en'] = 'New order from ' . $user->name . ' was placed!';
 
-        return response()->json(['message' => 'Cart added successfully!']);
+        AdminController::notify(User::where('is_admin', 1)->first()->FCMToken, $message[$lang]);
+
+        $message['ar'] = 'تم إضافة طلبية جديدة';
+        $message['en'] = 'Cart added successfully!';
+
+        return response()->json(['message' => $message[$lang]]);
     }
 
 
     //used by the storeMan, returns all the orders of all users
     public function all()
     {
+        $lang = $this->lang();
         $carts = Cart::latest()->get();
-        $message = ['message' => 'all orders displayed successfully!'];
+
+        $message['ar'] = 'تم عرض جميع الطلبات بنجاح';
+        $message['en'] = 'all orders displayed successfully!';
+
+        $message = ['message' => $message[$lang]];
         return (new CartCollection($carts))->additional($message);
     }
 
     //returns all carts in preparation according to latency
     public function inPreparation()
     {
+        $lang = $this->lang();
         $carts = Cart::where('status', 'in preparation')->oldest()->get();
-        $message = ['message' => 'in preparation orders displayed successfully!'];
+
+        $message['ar'] = 'تم عرض جميع طلبات قيد التحضير بنجاح';
+        $message['en'] = 'in preparation orders displayed successfully!';
+
+        $message = ['message' => $message[$lang]];
         return (new CartCollection($carts))->additional($message);
     }
 
     public function refused()
     {
+
+        $lang = $this->lang();
         $carts = Cart::where('status', 'refused')->latest()->get();
-        $message = ['message' => 'refused orders displayed successfully!'];
+
+        $message['ar'] = 'تم عرض جميع الطلبات المرفوضة بنجاح';
+        $message['en'] = 'refused orders displayed successfully!';
+
+        $message = ['message' => $message[$lang]];
         return (new CartCollection($carts))->additional($message);
     }
     public function gettingDelivered()
     {
+
+        $lang = $this->lang();
         $carts = Cart::where('status', 'getting delivered')->latest()->get();
-        $message = ['message' => 'getting delivered orders user displayed successfully!'];
+
+        $message['ar'] = 'تم عرض جميع طلبات قيدالتوصيل بنجاح';
+        $message['en'] = 'getting delivered orders user displayed successfully!';
+
+        $message = ['message' => $message[$lang]];
         return (new CartCollection($carts))->additional($message);
     }
     public function delivered()
     {
+
+        $lang = $this->lang();
         $carts = Cart::where('status', 'delivered')->latest()->get();
-        $message = ['message' => 'delivered orders displayed successfully!'];
+
+        $message['ar'] = 'تم عرض جميع الطلبات التي تم توصيلها بنجاح';
+        $message['en'] =  'delivered orders displayed successfully!';
+
+        $message = ['message' => $message[$lang]];
         return (new CartCollection($carts))->additional($message);
     }
     //used by admin to display a user's carts
     public function userList(User $user)
     {
+
+        $lang = $this->lang();
         $carts = $user->carts()->get();
-        $message = ['message' => 'orders of the user displayed successfully!'];
+
+        $message['ar'] = 'تم عرض جميع الطلبات للصيدلاني ' . $user->id . ' بنجاح';
+        $message['en'] = 'all orders to ' . $user->id . ' displayed successfully!';
+
+        $message = ['message' => $message[$lang]];
         return (new CartCollection($carts))->additional($message);
     }
 
     //used by the user to display his own carts
     public function authList()
     {
+
+        $lang = $this->lang();
         $carts = AuthMiddleware::getUser()->carts()->get();
-        $message = ['message' => 'your orders displayed successfully!'];
+
+        $message['ar'] = 'تم عرض جميع طلباتك بنجاح';
+        $message['en'] = 'your orders displayed successfully!';
+
+        $message = ['message' => $message[$lang]];
         return (new CartCollection($carts))->additional($message);
     }
 
     //this function is used to display a specific cart
     public function show(Cart $cart)
     {
-        $message = ['message' => 'order displayed successfully!'];
+        $lang = $this->lang();
+
+        $message['ar'] = 'تم عرض الطلب بنجاح';
+        $message['en'] = 'all orders displayed successfully!';
+
+        $message = ['message' => $message[$lang]];
         return (new CartResource($cart))->additional($message);
     }
 }
