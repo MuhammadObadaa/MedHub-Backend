@@ -205,7 +205,7 @@
                                 {{ $category }}
                             </td>
                             <td>
-                                {{ $value . '%' }}
+                                {{ $value . 'S.P' }}
                             </td>
                         </tr>
                     @endforeach
