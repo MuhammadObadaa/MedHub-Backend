@@ -10,18 +10,25 @@ class searchController extends Controller
 {
     public function search($searched_text, $by)
     {
+        $lang = $this->lang();
+
         if ($this->lang() == 'ar')
             $by = 'ar_' . $by;
 
         //case_sensitive search
         $medicine = Medicine::where($by, 'like', '%' . $searched_text . '%')->OrderBy('popularity', 'DESC')->where('available', 1)->get();
 
-        $message = ['message' => 'medicines listed successfully!'];
+        $message['ar'] = 'تم عرض الأدوية بنجاح';
+        $message['en'] = 'medicines listed successfully!';
+
+        $message = ['message' => $message[$lang]];
 
         return (new MedicineCollection($medicine))->additional($message);
     }
     public function searchInCategory($category, $searched_text, $by)
     {
+        $lang = $this->lang();
+
         if ($this->lang() == 'ar')
             $by = 'ar_' . $by;
 
@@ -29,7 +36,10 @@ class searchController extends Controller
 
         $medicine = $medicine->where($by, 'like', '%' . $searched_text . '%')->OrderBy('popularity', 'DESC')->get();
 
-        $message = ['message' => 'medicines listed successfully!'];
+        $message['ar'] = 'تم عرض الأدوية بنجاح';
+        $message['en'] = 'medicines listed successfully!';
+
+        $message = ['message' => $message[$lang]];
 
         return (new MedicineCollection($medicine))->additional($message);
     }

@@ -16,27 +16,39 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
+    //TODO: make show() call show(User) route instead of reimplement it
     public function show()
     {
-        $message = ['message' => 'your information displayed successfully!'];
+        $lang = $this->lang();
+        $message['ar'] = 'تم عرض الصفحة الشخصة بنجاح';
+        $message['en'] = 'your information displayed successfully!';
+        $message = ['message' => $message[$lang]];
         return (new UserResource(AuthMiddleware::getUser()))->additional($message);
     }
 
     public function showUser(User $user)
     {
-        $message = ['message' => 'User displayed successfully!'];
+        $lang = $this->lang();
+        $message['ar'] = 'تم عرض الصفحة الشخصة بنجاح';
+        $message['en'] = 'your information displayed successfully!';
+        $message = ['message' => $message[$lang]];
         return (new UserResource($user))->additional($message);
     }
 
     public function list()
     {
+        $lang = $this->lang();
         $users = User::where('is_admin', FALSE)->get();
-        $message = ['message' => 'User displayed successfully!'];
+
+        $message['ar'] = 'تم عرض الصفحات الشخصة بنجاح';
+        $message['en'] = 'Users information displayed successfully!';
+        $message = ['message' => $message[$lang]];
         return UserResource::collection($users)->additional($message);
     }
 
     public function favor(Medicine $medicine)
     {
+        $lang = $this->lang();
         $user = AuthMiddleware::getUser();
 
         // you can send medicine->id and the medicine object itself
@@ -46,11 +58,15 @@ class UserController extends Controller
             $medicine->update(['popularity' =>  $medicine->popularity + 1]);
         }
 
-        return response()->json(['message' => 'medicine added to favorites successfully']);
+        $message['ar'] = 'تمت الإضافة للمفضلة بنجاح';
+        $message['en'] = 'medicine added to favorites successfully';
+
+        return response()->json(['message' => $message[$lang]]);
     }
 
     public function unFavor(Medicine $medicine)
     {
+        $lang = $this->lang();
         $user = AuthMiddleware::getUser();
 
         if ($user->hasFavored($medicine)) {
@@ -59,12 +75,16 @@ class UserController extends Controller
             $medicine->update(['popularity' =>  $medicine->popularity - 1]);
         }
 
-        return response()->json(['message' => 'medicine removed from favorites successfully']);
+        $message['ar'] = 'تمت الإزالة من المفضلة بنجاح';
+        $message['en'] = 'medicine removed from favorites successfully';
+
+        return response()->json(['message' => $message[$lang]]);
     }
 
     //TODO: specify this method as needed. at least some of them
     public function update()
     {
+        $lang = $this->lang();
         $user = AuthMiddleWare::getUser();
 
         if (request()->has('name'))
@@ -74,24 +94,30 @@ class UserController extends Controller
         if (request()->has('pharmacyLocation'))
             $user->update(['pharmacyLocation' => request('pharmacyLocation')]);
         if (request()->has('newPassword')) {
-            if (!Hash::check(request('oldPassword'), $user->password))
-                return response()->json(['message' => 'Wrong Password!'], 400);
-            $user->update(['password', Hash::make('newPassword')]);
+            if (Hash::check(request('oldPassword'), $user->password))
+                //return response()->json(['message' => 'Wrong Password!'], 400);
+                $user->update(['password', Hash::make('newPassword')]);
         }
         if (request()->has('image')) {
             $validatedImage = Validator::make(request()->all(), ['image' => 'image']);
 
-            if ($validatedImage->fails())
-                return response()->json(['message' => 'Invalid image file'], 400);
+            if (!$validatedImage->fails()) {
+                //$message['ar'] = 'نوع الصورة غير صحيح';
+                //$message['en'] = 'Invalid image file';
+                //return response()->json(['message' => $message[$lang]], 400);
 
-            $imageFile = request()->file('image')->store('app', 'public');
-            // if (File::exists($user->image))
-            //     File::delete($user->image);
-            if ($user->image != null)
-                Storage::disk('public')->delete($user->image);
-            $user->update(['image' => $imageFile]);
+                $imageFile = request()->file('image')->store('app', 'public');
+                // if (File::exists($user->image))
+                //     File::delete($user->image);
+                if ($user->image != null)
+                    Storage::disk('public')->delete($user->image);
+                $user->update(['image' => $imageFile]);
+            }
         }
 
-        return response()->json(['message' => 'Changes applied successfully!']);
+        $message['ar'] = 'تم التعديل بنجاح';
+        $message['en'] = 'Changes applied successfully!';
+
+        return response()->json(['message' => $message[$lang]]);
     }
 }

@@ -23,7 +23,9 @@ class StatisticsController extends Controller
     //this function does not contain dates
     public function userStat()
     {
-        $ar = (request()->header('lang') == 'ar');
+        $lang = $this->lang();
+
+        $ar = ($lang == 'ar');
         $user = AuthMiddleware::getUser();
         $totalOrders = $user->carts()->count();
         $refusedOrders = $user->carts()->where('status', 'refused')->count();
@@ -51,6 +53,10 @@ class StatisticsController extends Controller
         foreach ($catPercentage as &$percentage) {
             $percentage = (float)number_format($percentage * 100.0 / $totalMed, 2);
         }
+
+        $message['ar'] = 'تم عرض الاحصائيات بنجاح';
+        $message['en'] = 'statistics listed successfully!';
+
         return response()->json([
             'total orders' => $totalOrders,
             'refused orders' => $refusedOrders,
@@ -62,13 +68,13 @@ class StatisticsController extends Controller
             'favorite medicines' => $favoriteMedicines,
             'categories percentages' => $catPercentage,
 
-            'message' => 'statistics returned successfully!'
+            'message' => $message[$lang]
         ]);
     }
 
     public function userCharts($year, $month)
     {
-
+        $lang = $this->lang();
         $user = AuthMiddleware::getUser();
 
         if ($year != 0 && $month != 0) {
@@ -84,6 +90,10 @@ class StatisticsController extends Controller
         })->map(function ($group) {
             return ($group->sum('bill')) / 1000000.0;
         });
+
+        $message['ar'] = 'تم عرض الرسوم البيانية بنجاح بنجاح';
+        $message['en'] = 'charts listed successfully!';
+
         return response()->json([
             "points" => [
                 '1' => $cartsByWeek["1"] ?? 0,
@@ -91,7 +101,7 @@ class StatisticsController extends Controller
                 '3' => $cartsByWeek["3"] ?? 0,
                 '4' => $cartsByWeek["4"] ?? 0
             ],
-            'message' => 'chart returned successfully!'
+            'message' => $message[$lang]
         ]);
         //, 200, [], JSON_PRETTY_PRINT);
     }
@@ -99,7 +109,8 @@ class StatisticsController extends Controller
 
     public function adminStat()
     {
-        $ar = (request()->header('lang') == 'ar');
+        $lang = $this->lang();
+        $ar = ($lang == 'ar');
 
         $userCnt = User::count();
         $ordersCnt = Cart::count();
@@ -157,6 +168,9 @@ class StatisticsController extends Controller
             $percentage = (float) number_format(($percentage * 100.0) / $soldMedicines, 2);
         }
 
+        $message['ar'] = 'تم عرض الاحصائيات بنجاح';
+        $message['en'] = 'statistics listed successfully!';
+
         $data = [
             'users count' => $userCnt,
             'orders count' => $ordersCnt,
@@ -176,12 +190,13 @@ class StatisticsController extends Controller
             'categories percentages for sold medicines' => $soldCategoriesPercentages,
         ];
 
-        $data['message'] = 'statistics displayed successfully!';
+        $data['message'] = $message[$lang];
         return $data;
     }
 
     public function adminCharts($year, $month)
     {
+        $lang = $this->lang();
         //this function is for time charts
         if ($month == 0) {
             $carts = Cart::whereYear('created_at', $year)->where('payed', 1)->get();
@@ -233,11 +248,13 @@ class StatisticsController extends Controller
                 $ProfitByWeek[(string)$i] = $ProfitWeekSample[(string)$i] ?? 0;
             }
 
+            $message['ar'] = 'تم عرض الرسوم البيانية الخاصة بالأسبوع بنجاح';
+            $message['en'] = 'month chart displayed successfully!';
 
             return response()->json([
                 "income" => $IncomeByWeek,
                 "profit" => $ProfitByWeek,
-                'message' => 'month chart displayed successfully!'
+                'message' => $message[$lang]
             ]);
         }
     }
@@ -245,6 +262,7 @@ class StatisticsController extends Controller
 
     public function adminWeekCharts($year, $week)
     {
+        $lang = $this->lang();
         $carts = Cart::whereBetween('created_at', [Carbon::create($year)->week($week)->startOfWeek(), Carbon::create($year)->week($week)->endOfWeek()])->where('payed', 1)->get();
         $IncomeByDay = $carts->groupBy(function ($cart) {
             return $cart->created_at->format('N');
@@ -262,10 +280,13 @@ class StatisticsController extends Controller
             $IncomeByDay[(string)$i] = $IncomeByDay[(string)$i] ?? 0;
             $ProfitByDay[(string)$i] = $ProfitByDay[(string)$i] ?? 0;
         }
+        $message['ar'] = 'تم عرض الرسوم البيانية الخاصة باليوم بنجاح';
+        $message['en'] = 'day chart displayed successfully!';
+
         return response()->json([
             "income" => $IncomeByDay,
             "profit" => $ProfitByDay,
-            'message' => 'day chart displayed successfully!'
+            'message' => $message[$lang]
         ]);
     }
 }

@@ -163,24 +163,34 @@ class ReportsController extends Controller
 
     public function adminReport($year1, $month1, $day1, $year2, $month2, $day2)
     {
+        $lang = $this->lang();
+
         $data = $this->formatAdminReport(
             Carbon::create($year1, $month1, $day1),
             Carbon::create($year2, $month2, $day2, 23, 59, 59)
         );
 
-        $data['message'] = 'report returned successfully!';
+        $message['ar'] = 'تم عرض التقرير بنجاح';
+        $message['en'] = 'report returned successfully!';
+
+        $data['message'] = $message[$lang];
 
         return response()->json($data);
     }
 
     public function userReport($year1, $month1, $day1, $year2, $month2, $day2)
     {
+        $lang = $this->lang();
+
         $data = $this->formatUserReport(
             Carbon::create($year1, $month1, $day1),
             Carbon::create($year2, $month2, $day2, 23, 59, 59)
         );
 
-        $data['message'] = 'report returned successfully!';
+        $message['ar'] = 'تم عرض التقرير بنجاح';
+        $message['en'] = 'report returned successfully!';
+
+        $data['message'] = $message[$lang];
 
         return response()->json($data);
     }

@@ -33,9 +33,11 @@ class AuthController extends Controller
 
         if (request()->has('image')) {
             $validatedImage = Validator::make(request()->all(), ['image' => 'image']);
-            if ($validatedImage->fails())
-                return response()->json(['message' => 'Invalid image file']);
-            else
+            if ($validatedImage->fails()) {
+                $message['ar'] = 'نوع الصورة غير صحيح';
+                $message['en'] = 'Invalid image file';
+                return response()->json(['message' => $message[$lang]]);
+            } else
                 $imageFile = request()->file('image')->store('app', 'public');
         }
 
@@ -63,7 +65,7 @@ class AuthController extends Controller
         $user = User::where('phoneNumber', request('phoneNumber'))->first();
 
         if (!$user) {
-            $message['ar'] = 'لا يوجد هكذا رقم';
+            $message['ar'] = 'لا يوجد رقم كهذا';
             $message['en'] = 'No such phoneNumber';
             return response()->json(['message' => $message[$lang]], 400);
         }
