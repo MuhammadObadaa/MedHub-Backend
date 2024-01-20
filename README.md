@@ -2,7 +2,7 @@
 ---
 
 ## About :
-A backend system to handle orders between pharmacists and a warehouse owner and provide statistics and charts for both.
+A backend system to handle orders between pharmacists and a warehouse owner and provide statistics and charts for both built with Laravel 10
 
 The frontend side project: [Web application for **warehouse owner**](https://github.com/Abdalrahman-Alhamod/MedHub-Web), [Mobile application for **pharmacists**](https://github.com/Abdalrahman-Alhamod/MedHub-Mobile)
 
