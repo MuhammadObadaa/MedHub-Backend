@@ -1,7 +1,7 @@
 # MedHub-Backend
 ---
 
-## About :
+## About:
 A backend system to handle orders between pharmacists and a warehouse owner and provide statistics and charts for both built with Laravel 10
 
 The frontend side project: [Web application for **warehouse owner**](https://github.com/Abdalrahman-Alhamod/MedHub-Web), [Mobile application for **pharmacists**](https://github.com/Abdalrahman-Alhamod/MedHub-Mobile)
@@ -15,24 +15,28 @@ The frontend side project: [Web application for **warehouse owner**](https://git
 [**Abdalrahman Alhamod**](https://github.com/Abdalrahman-Alhamod)
 
 ---
-## Features :
-* **Order management** : pharmacists can create, view and update. Admin can view, accept, or reject orders.
+## Features:
+* **Order management**: pharmacists can create, view and update. Admin can view, accept, or reject orders.
 
-* **Medicine management** : admin can create, view, update, and delete medicines. Pharmacists can view medicines and their details.
+* **Medicine management**: admin can create, view, update, and delete medicines. Pharmacists can view medicines and their details.
 
-* **Statistics** : the system provides many statistics and charts for both admin and pharmacists.
+* **Statistics**: the system provides many statistics and charts for both admin and pharmacists.
 
-* **Reports** : the system generates PDF reports for orders and medicines, which can be downloaded by the admin and pharmacists.
+* **Reports**: the system generates PDF reports for orders and medicines, which can be downloaded by the admin and pharmacists.
 
-* **Notifications** : the system uses Firebase to push notifications to the pharmacists when their orders are accepted or rejected by the admin. and to the admin once a new order created.
+* **Notifications**: the system uses Firebase to push notifications to the pharmacists when their orders are accepted or rejected by the admin. and to the admin once a new order created.
 
-## Technologies and packages :
+## Technologies and packages:
 * php (Laravel)
 * MySQL
 * Laravel blade
 * Firebase
 * DomPdf
 
+## Entity Relationship Diagram:
+
+![ERD image](https://raw.githubusercontent.com/MuhammdObadaa/MedHub-Backend/main/DB.jpg)
+سس
 ---
 
 ## Installation :
@@ -68,9 +72,9 @@ Once you log in, you can access the features of the system according to your rol
 
 ---
 
-### Contributing :
+### Contributing:
 If you want to contribute to this project, you can fork this repository and make a pull request. You can also open an issue if you find any bugs or have any suggestions.
 
-### License :
+### License:
 This project is licensed under the MIT License. See the LICENSE file for more details.
 
