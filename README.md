@@ -36,7 +36,7 @@ The frontend side project: [Web application for **warehouse owner**](https://git
 ## Entity Relationship Diagram:
 
 ![ERD image](https://raw.githubusercontent.com/MuhammdObadaa/MedHub-Backend/main/DB.jpg)
-سس
+
 ---
 
 ## Installation :
