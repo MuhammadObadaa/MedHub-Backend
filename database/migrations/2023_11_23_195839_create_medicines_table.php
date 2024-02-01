@@ -19,12 +19,15 @@ return new class extends Migration
             $table->string('ar_scientificName');
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->string('brand');
+            $table->string('ar_brand');
             $table->text('description');
             $table->text('ar_description');
             $table->unsignedInteger('quantity')->default(0);
             $table->date('expirationDate');
             $table->unsignedInteger('price');
+            $table->unsignedInteger('profit')->default(0);
             $table->unsignedInteger('popularity')->default(0);
+            $table->boolean('available')->default(true);
             $table->string('image');
             $table->timestamps();
         });

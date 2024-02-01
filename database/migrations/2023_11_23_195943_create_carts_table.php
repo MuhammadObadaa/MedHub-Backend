@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('bill');
-            $table->string('status');
+            $table->unsignedInteger('profit');
+            $table->string('status')->default('in preparation');
+            $table->boolean('payed')->default(false);
             $table->timestamps();
         });
     }

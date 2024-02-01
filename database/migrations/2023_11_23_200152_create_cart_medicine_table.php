@@ -15,6 +15,9 @@ return new class extends Migration
             $table->foreignId('cart_id')->constrained()->cascadeOnDelete();
             $table->foreignId('medicine_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('quantity');
+            $table->unsignedInteger('price')->default(0);
+            $table->unsignedInteger('profit')->default(0);
+            $table->date('expirationDate')->nullable();
             $table->timestamps();
         });
     }
