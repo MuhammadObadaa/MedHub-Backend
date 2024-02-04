@@ -52,10 +52,6 @@ Before you start contributing, make sure that you have read and understood the [
 
 Provide instructions on how to set up the development environment locally.
 
-## Coding Guidelines
-
-Follow the [Coding Guidelines](CODE_STYLE.md) to maintain a consistent code style.
-
 ## Commit Message Guidelines
 
 Follow the [Commit Message Guidelines](CONTRIBUTING.md#commit-message-guidelines) for meaningful and standardized commit messages.
