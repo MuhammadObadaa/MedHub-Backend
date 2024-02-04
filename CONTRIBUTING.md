@@ -66,7 +66,7 @@ Follow the [Commit Message Guidelines](CONTRIBUTING.md#commit-message-guidelines
 
 ## Community
 
-Connect with the community and contributors:
+Connect to the community and contributors:
 
 - [GitHub Discussions](https://github.com/MuhammdObadaa/MedHub-Backend/discussions)
 - [Community Forum](https://community.example.com)
